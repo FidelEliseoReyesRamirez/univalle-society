@@ -15,8 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('codigo_sis')->nullable()->unique();
+            $table->string('role')->default('estudiante'); // admin, gestor, estudiante
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->boolean('esta_eliminado')->default(false); // Eliminación lógica solicitada
             $table->rememberToken();
             $table->timestamps();
         });
@@ -25,6 +28,7 @@ return new class extends Migration
             $table->string('email')->primary();
             $table->string('token');
             $table->timestamp('created_at')->nullable();
+            $table->boolean('esta_eliminado')->default(false);
         });
 
         Schema::create('sessions', function (Blueprint $table) {
