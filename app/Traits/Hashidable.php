@@ -7,7 +7,7 @@ use Vinkla\Hashids\Facades\Hashids;
 trait Hashidable
 {
     /**
-     * Reemplaza el ID por el Hash en las URLs generadas.
+     * Esta función hace que $user->id devuelva el Hash automáticamente en las rutas
      */
     public function getRouteKey()
     {
@@ -15,13 +15,18 @@ trait Hashidable
     }
 
     /**
-     * Decodifica el Hash para encontrar el registro en la base de datos.
+     * Esta función recibe el Hash (ej: jR8v0y) y lo convierte en el ID real (ej: 2)
      */
     public function resolveRouteBinding($value, $field = null)
     {
+        // Intentamos decodificar
         $decoded = Hashids::decode($value);
-        if (empty($decoded)) return null;
-        
+
+        // Si no se puede decodificar, Laravel devolverá 404 automáticamente al retornar null
+        if (empty($decoded)) {
+            return null;
+        }
+
         return parent::resolveRouteBinding($decoded[0], $field);
     }
 }

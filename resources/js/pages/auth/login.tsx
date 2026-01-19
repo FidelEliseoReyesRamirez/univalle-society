@@ -1,5 +1,3 @@
-import { Form, Head } from '@inertiajs/react';
-
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
@@ -8,38 +6,58 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/auth-layout';
-import { register } from '@/routes';
-import { store } from '@/routes/login';
-import { request } from '@/routes/password';
-
-interface LoginProps {
-    status?: string;
-    canResetPassword: boolean;
-    canRegister: boolean;
-}
+import { Form, Head } from '@inertiajs/react';
+import { AlertCircle } from 'lucide-react';
 
 export default function Login({
     status,
     canResetPassword,
     canRegister,
-}: LoginProps) {
+}: {
+    status?: string;
+    canResetPassword: boolean;
+    canRegister: boolean;
+}) {
+    const formatErrorMessage = (message: string) => {
+        return message.replace(/(\d+\.\d+)/g, (match) =>
+            Math.round(parseFloat(match)).toString(),
+        );
+    };
+
     return (
         <AuthLayout
-            title="Log in to your account"
-            description="Enter your email and password below to log in"
+            title="SICI-ISI Univalle"
+            description="Ingresa tus credenciales para acceder al sistema"
         >
             <Head title="Log in" />
 
             <Form
-                {...store.form()}
+                action="/login"
+                method="post"
                 resetOnSuccess={['password']}
                 className="flex flex-col gap-6"
             >
                 {({ processing, errors }) => (
                     <>
+                        {errors.email && (
+                            <div className="flex animate-in items-start gap-3 rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive duration-300 fade-in slide-in-from-top-2">
+                                <AlertCircle className="h-5 w-5 shrink-0" />
+                                <div>
+                                    <span className="font-bold">
+                                        Aviso de seguridad:
+                                    </span>
+                                    <p className="mt-1 leading-relaxed">
+                                        {formatErrorMessage(errors.email)}
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+
                         <div className="grid gap-6">
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
+                                <Label htmlFor="email">
+                                    Correo Electrónico
+                                </Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -49,20 +67,28 @@ export default function Login({
                                     tabIndex={1}
                                     autoComplete="email"
                                     placeholder="email@example.com"
+                                    className={
+                                        errors.email
+                                            ? 'border-destructive focus-visible:ring-destructive'
+                                            : ''
+                                    }
                                 />
-                                <InputError message={errors.email} />
+                                <InputError
+                                    message={errors.email}
+                                    className="hidden"
+                                />
                             </div>
 
                             <div className="grid gap-2">
                                 <div className="flex items-center">
-                                    <Label htmlFor="password">Password</Label>
+                                    <Label htmlFor="password">Contraseña</Label>
                                     {canResetPassword && (
                                         <TextLink
-                                            href={request()}
+                                            href="/forgot-password"
                                             className="ml-auto text-sm"
                                             tabIndex={5}
                                         >
-                                            Forgot password?
+                                            ¿Olvidaste tu contraseña?
                                         </TextLink>
                                     )}
                                 </div>
@@ -73,7 +99,12 @@ export default function Login({
                                     required
                                     tabIndex={2}
                                     autoComplete="current-password"
-                                    placeholder="Password"
+                                    placeholder="••••••••"
+                                    className={
+                                        errors.password
+                                            ? 'border-destructive focus-visible:ring-destructive'
+                                            : ''
+                                    }
                                 />
                                 <InputError message={errors.password} />
                             </div>
@@ -84,7 +115,12 @@ export default function Login({
                                     name="remember"
                                     tabIndex={3}
                                 />
-                                <Label htmlFor="remember">Remember me</Label>
+                                <Label
+                                    htmlFor="remember"
+                                    className="text-sm font-medium"
+                                >
+                                    Recordar sesión
+                                </Label>
                             </div>
 
                             <Button
@@ -92,18 +128,16 @@ export default function Login({
                                 className="mt-4 w-full"
                                 tabIndex={4}
                                 disabled={processing}
-                                data-test="login-button"
                             >
-                                {processing && <Spinner />}
-                                Log in
+                                {processing ? <Spinner /> : 'Iniciar Sesión'}
                             </Button>
                         </div>
 
                         {canRegister && (
                             <div className="text-center text-sm text-muted-foreground">
-                                Don't have an account?{' '}
-                                <TextLink href={register()} tabIndex={5}>
-                                    Sign up
+                                ¿No tienes cuenta?{' '}
+                                <TextLink href="/register" tabIndex={5}>
+                                    Regístrate aquí
                                 </TextLink>
                             </div>
                         )}
@@ -112,7 +146,7 @@ export default function Login({
             </Form>
 
             {status && (
-                <div className="mb-4 text-center text-sm font-medium text-green-600">
+                <div className="mt-4 text-center text-sm font-medium text-green-600">
                     {status}
                 </div>
             )}

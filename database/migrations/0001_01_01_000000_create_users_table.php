@@ -17,6 +17,11 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('codigo_sis')->nullable()->unique();
             $table->string('role')->default('estudiante'); // admin, gestor, estudiante
+            // --- NUEVAS COLUMNAS DE SEGURIDAD ---
+            $table->integer('intentos_fallidos')->default(0); // Contador de errores
+            $table->boolean('esta_bloqueado')->default(false); // Bloqueo manual por admin
+            $table->timestamp('bloqueado_hasta')->nullable(); // Para el bloqueo temporal (15 min)
+            // ------------------------------------
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->boolean('esta_eliminado')->default(false); // Eliminación lógica solicitada
