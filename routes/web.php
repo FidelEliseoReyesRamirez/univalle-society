@@ -33,6 +33,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/usuarios/{user}/unlock', [UserController::class, 'unlock'])->name('users.unlock');
         Route::patch('/usuarios/{user}/role', [UserController::class, 'updateRole'])->name('users.role');
         Route::delete('/usuarios/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+        Route::post('/usuarios', [UserController::class, 'store'])->name('users.store');
+        Route::get('/usuarios/papelera', [UserController::class, 'trashed'])->name('users.trashed');
+        Route::post('/usuarios/{user}/restore', [UserController::class, 'restore'])->name('users.restore');
+        Route::patch('/usuarios/{user}', [UserController::class, 'update'])->name('users.update');
     });
 });
 
