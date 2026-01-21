@@ -11,31 +11,55 @@ import { send } from '@/routes/verification';
 export default function VerifyEmail({ status }: { status?: string }) {
     return (
         <AuthLayout
-            title="Verify email"
-            description="Please verify your email address by clicking on the link we just emailed to you."
+            title="Verifica tu correo"
+            description="Por favor, verifica tu dirección de correo haciendo clic en el enlace que te acabamos de enviar."
         >
-            <Head title="Email verification" />
+            <Head title="Verificación de correo" />
+
+            {/* Estilo para asegurar que el logo no se corte y no choque */}
+            <style>{`
+                img[alt="Logo Sociedad"], 
+                a[href="/"] svg, 
+                .flex.justify-center.mb-4 {
+                    margin-top: 100px !important; 
+                    margin-bottom: 30px !important;
+                }
+
+                .text-center.space-y-2, h1, p {
+                    margin-top: 20px !important;
+                }
+                
+                form {
+                    margin-top: 30px !important;
+                }
+            `}</style>
 
             {status === 'verification-link-sent' && (
                 <div className="mb-4 text-center text-sm font-medium text-green-600">
-                    A new verification link has been sent to the email address
-                    you provided during registration.
+                    Se ha enviado un nuevo enlace de verificación a la dirección
+                    de correo que proporcionaste durante el registro.
                 </div>
             )}
 
             <Form {...send.form()} className="space-y-6 text-center">
                 {({ processing }) => (
                     <>
-                        <Button disabled={processing} variant="secondary">
-                            {processing && <Spinner />}
-                            Resend verification email
+                        <Button
+                            disabled={processing}
+                            variant="secondary"
+                            className="w-full font-bold"
+                        >
+                            {processing ? <Spinner className="mr-2" /> : null}
+                            {processing
+                                ? 'Reenviando...'
+                                : 'Reenviar correo de verificación'}
                         </Button>
 
                         <TextLink
                             href={logout()}
-                            className="mx-auto block text-sm"
+                            className="mx-auto block text-sm font-medium underline"
                         >
-                            Log out
+                            Cerrar sesión
                         </TextLink>
                     </>
                 )}

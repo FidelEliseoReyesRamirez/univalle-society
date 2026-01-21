@@ -31,6 +31,30 @@ export default function Login({
         >
             <Head title="Log in" />
 
+            {/* ESTO ARREGLA EL LOGO Y SEPARA LOS TEXTOS */}
+            <style>{`
+                /* 1. Bajamos el logo lo suficiente para que no se corte arriba */
+                img[alt="Logo Sociedad"], 
+                a[href="/"] svg, 
+                .flex.justify-center.mb-4 {
+                    margin-top: 115px !important; 
+                    margin-bottom: 30px !important;
+                }
+
+                /* 2. Bajamos el bloque de título y descripción para que no choquen con el logo */
+                .text-center.space-y-2, 
+                h1, 
+                .text-center.space-y-2 + p {
+                    margin-top: 30px !important;
+                    display: block !important;
+                }
+
+                /* 3. Aseguramos espacio antes del formulario */
+                form {
+                    margin-top: 5px !important;
+                }
+            `}</style>
+
             <Form
                 action="/login"
                 method="post"
@@ -66,7 +90,7 @@ export default function Login({
                                     autoFocus
                                     tabIndex={1}
                                     autoComplete="email"
-                                    placeholder="email@example.com"
+                                    placeholder="email@ejemplo.com"
                                     className={
                                         errors.email
                                             ? 'border-destructive focus-visible:ring-destructive'
@@ -99,7 +123,6 @@ export default function Login({
                                     required
                                     tabIndex={2}
                                     autoComplete="current-password"
-                                    placeholder="••••••••"
                                     className={
                                         errors.password
                                             ? 'border-destructive focus-visible:ring-destructive'
@@ -125,18 +148,26 @@ export default function Login({
 
                             <Button
                                 type="submit"
-                                className="mt-4 w-full"
+                                className="mt-4 w-full font-bold"
                                 tabIndex={4}
                                 disabled={processing}
                             >
-                                {processing ? <Spinner /> : 'Iniciar Sesión'}
+                                {processing ? (
+                                    <Spinner className="mr-2" />
+                                ) : (
+                                    'Iniciar Sesión'
+                                )}
                             </Button>
                         </div>
 
                         {canRegister && (
                             <div className="text-center text-sm text-muted-foreground">
                                 ¿No tienes cuenta?{' '}
-                                <TextLink href="/register" tabIndex={5}>
+                                <TextLink
+                                    href="/register"
+                                    tabIndex={5}
+                                    className="font-semibold underline"
+                                >
                                     Regístrate aquí
                                 </TextLink>
                             </div>

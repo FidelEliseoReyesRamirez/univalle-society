@@ -16,10 +16,28 @@ interface ResetPasswordProps {
 export default function ResetPassword({ token, email }: ResetPasswordProps) {
     return (
         <AuthLayout
-            title="Reset password"
-            description="Please enter your new password below"
+            title="Restablecer contraseña"
+            description="Por favor, ingresa tu nueva contraseña a continuación"
         >
-            <Head title="Reset password" />
+            <Head title="Restablecer contraseña" />
+
+            {/* Ajuste de espacio para el logo y títulos */}
+            <style>{`
+                img[alt="Logo Sociedad"], 
+                a[href="/"] svg, 
+                .flex.justify-center.mb-4 {
+                    margin-top: 100px !important; 
+                    margin-bottom: 30px !important;
+                }
+
+                .text-center.space-y-2, h1, p {
+                    margin-top: 20px !important;
+                }
+                
+                form {
+                    margin-top: 20px !important;
+                }
+            `}</style>
 
             <Form
                 {...update.form()}
@@ -29,14 +47,14 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
                 {({ processing, errors }) => (
                     <div className="grid gap-6">
                         <div className="grid gap-2">
-                            <Label htmlFor="email">Email</Label>
+                            <Label htmlFor="email">Correo electrónico</Label>
                             <Input
                                 id="email"
                                 type="email"
                                 name="email"
                                 autoComplete="email"
                                 value={email}
-                                className="mt-1 block w-full"
+                                className="mt-1 block w-full cursor-not-allowed bg-muted"
                                 readOnly
                             />
                             <InputError
@@ -46,7 +64,7 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="password">Password</Label>
+                            <Label htmlFor="password">Nueva contraseña</Label>
                             <Input
                                 id="password"
                                 type="password"
@@ -54,14 +72,14 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
                                 autoComplete="new-password"
                                 className="mt-1 block w-full"
                                 autoFocus
-                                placeholder="Password"
+                                placeholder="Ingresa tu nueva contraseña"
                             />
                             <InputError message={errors.password} />
                         </div>
 
                         <div className="grid gap-2">
                             <Label htmlFor="password_confirmation">
-                                Confirm password
+                                Confirmar contraseña
                             </Label>
                             <Input
                                 id="password_confirmation"
@@ -69,7 +87,7 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
                                 name="password_confirmation"
                                 autoComplete="new-password"
                                 className="mt-1 block w-full"
-                                placeholder="Confirm password"
+                                placeholder="Repite la contraseña"
                             />
                             <InputError
                                 message={errors.password_confirmation}
@@ -79,12 +97,14 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
 
                         <Button
                             type="submit"
-                            className="mt-4 w-full"
+                            className="mt-4 w-full font-bold"
                             disabled={processing}
                             data-test="reset-password-button"
                         >
-                            {processing && <Spinner />}
-                            Reset password
+                            {processing ? <Spinner className="mr-2" /> : null}
+                            {processing
+                                ? 'Actualizando...'
+                                : 'Restablecer contraseña'}
                         </Button>
                     </div>
                 )}

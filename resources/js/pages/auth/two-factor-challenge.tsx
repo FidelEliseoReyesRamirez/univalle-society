@@ -25,18 +25,18 @@ export default function TwoFactorChallenge() {
     }>(() => {
         if (showRecoveryInput) {
             return {
-                title: 'Recovery Code',
+                title: 'Código de Recuperación',
                 description:
-                    'Please confirm access to your account by entering one of your emergency recovery codes.',
-                toggleText: 'login using an authentication code',
+                    'Por favor, confirma el acceso a tu cuenta ingresando uno de tus códigos de emergencia.',
+                toggleText: 'usar un código de autenticación',
             };
         }
 
         return {
-            title: 'Authentication Code',
+            title: 'Código de Autenticación',
             description:
-                'Enter the authentication code provided by your authenticator application.',
-            toggleText: 'login using a recovery code',
+                'Ingresa el código generado por tu aplicación de autenticación (Microsoft Authenticator).',
+            toggleText: 'usar un código de recuperación',
         };
     }, [showRecoveryInput]);
 
@@ -51,7 +51,7 @@ export default function TwoFactorChallenge() {
             title={authConfigContent.title}
             description={authConfigContent.description}
         >
-            <Head title="Two-Factor Authentication" />
+            <Head title="Autenticación de Dos Factores" />
 
             <div className="space-y-6">
                 <Form
@@ -63,36 +63,43 @@ export default function TwoFactorChallenge() {
                     {({ errors, processing, clearErrors }) => (
                         <>
                             {showRecoveryInput ? (
-                                <>
+                                <div className="space-y-2">
                                     <Input
                                         name="recovery_code"
                                         type="text"
-                                        placeholder="Enter recovery code"
+                                        placeholder="Ingresa el código de recuperación"
                                         autoFocus={showRecoveryInput}
                                         required
                                     />
                                     <InputError
                                         message={errors.recovery_code}
                                     />
-                                </>
+                                </div>
                             ) : (
                                 <div className="flex flex-col items-center justify-center space-y-3 text-center">
                                     <div className="flex w-full items-center justify-center">
-                                        <InputOTP
+                                        {/* Input oculto para que el Form capture el valor por el name="code" */}
+                                        <input
+                                            type="hidden"
                                             name="code"
+                                            value={code}
+                                        />
+
+                                        <InputOTP
                                             maxLength={OTP_MAX_LENGTH}
                                             value={code}
                                             onChange={(value) => setCode(value)}
                                             disabled={processing}
                                             pattern={REGEXP_ONLY_DIGITS}
                                         >
-                                            <InputOTPGroup>
+                                            <InputOTPGroup className="gap-2">
                                                 {Array.from(
                                                     { length: OTP_MAX_LENGTH },
                                                     (_, index) => (
                                                         <InputOTPSlot
                                                             key={index}
                                                             index={index}
+                                                            className="rounded-md border-2"
                                                         />
                                                     ),
                                                 )}
@@ -105,17 +112,21 @@ export default function TwoFactorChallenge() {
 
                             <Button
                                 type="submit"
-                                className="w-full"
-                                disabled={processing}
+                                className="w-full font-bold"
+                                disabled={
+                                    processing ||
+                                    (!showRecoveryInput &&
+                                        code.length !== OTP_MAX_LENGTH)
+                                }
                             >
-                                Continue
+                                {processing ? 'Verificando...' : 'Continuar'}
                             </Button>
 
                             <div className="text-center text-sm text-muted-foreground">
-                                <span>or you can </span>
+                                <span>o también puedes </span>
                                 <button
                                     type="button"
-                                    className="cursor-pointer text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
+                                    className="cursor-pointer font-medium text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:text-primary hover:decoration-current"
                                     onClick={() =>
                                         toggleRecoveryMode(clearErrors)
                                     }
