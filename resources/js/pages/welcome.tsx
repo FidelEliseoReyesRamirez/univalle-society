@@ -8,6 +8,7 @@ import AppLogoIconHor from '@/components/app-logo-hor-icon';
 import MenuIcon from '@/components/menu-icon';
 import MobileMenu from '@/components/mobile-menu';
 import '@/../css/special-button.css';
+import '@/../css/hero-section.css';
 
 export default function Welcome({
     canRegister = true,
@@ -26,7 +27,7 @@ export default function Welcome({
                     rel="stylesheet"
                 />
             </Head>
-            <div className="flex min-h-screen flex-col items-center bg-[#FDFDFC] p-6 text-[#1b1b18] lg:justify-center lg:p-8 dark:bg-[#0a0a0a]">
+            <div className=" min-h-screen items-center bg-[#FDFDFC] p-6 text-[#1b1b18] lg:justify-center lg:p-8 dark:bg-[#0a0a0a]">
                 <header className="w-full text-sm not-has-[nav]:hidden lg:max-w-8xl">
                     <nav className="fixed top-0 left-0 right-0 z-50 px-4 flex justify-between items-center gap-4 border-2 border-amber-600 bg-[#FDFDFC] dark:bg-[#0a0a0a]">
                         <div className='flex items-center'>
@@ -97,31 +98,54 @@ export default function Welcome({
                         </div>
                     </nav>
                 </header>
-                <body>
-                    <div id="hero-section" className="bg-amber-300 dark:bg-amber-600 w-screen -mx-6 lg:-mx-8 grow flex items-center justify-center py-20 px-4 lg:px-0">
-                        <div className="hero-content text-center">
-                            <h1 className="text-4xl font-bold mb-4">Welcome to Our Application</h1>
-                            <p className="text-lg mb-8">This is the welcome page of our awesome application built with Inertia.js and React.</p>
-                            {auth.user ? (
+
+                <div className="hero-section w-screen -mx-6 lg:-mx-8 h-1000px items-center justify-center py-20 px-4 lg:px-0">
+                    <div className="text-center">
+                        <h1 className="title font-display">SICI - ISI</h1>
+                        <p className="title-sub font-display text-lg mb-16">SOCIEDAD DE INVESTIGACIÓN, CIENCIA E INNOVACIÓN DE INGENIERÍA EN SISTEMAS INFORMÁTICOS</p>
+                        {auth.user ? (
+                            <Link
+                                href={dashboard()}
+                                className="btn-primary"
+                            >
+                                Ir a Dashboard
+                            </Link>
+                        ) : (
+                            <>
                                 <Link
-                                    href={dashboard()}
-                                    className="btn-primary"
+                                    href={login()}
+                                    className="btn-12 btn-secondary mr-4"
                                 >
-                                    Go to Dashboard
+                                    INGRESAR
                                 </Link>
-                            ) : (
-                                <>
-                                    <Link
-                                        href={login()}
-                                        className="btn-secondary mr-4"
-                                    >
-                                        Login
-                                    </Link>
-                                </>
-                            )}
-                        </div>
+                            </>
+                        )}
                     </div>
-                </body>
+                </div>
+                <div className="events-section dark:bg-blue-600 w-screen -mx-6 lg:-mx-8 items-center justify-center py-20 px-4 lg:px-0">
+                    <div className="text-center">
+                        <h1 className="text-4xl font-bold mb-4">SICI - ISI</h1>
+                        <p className="text-lg mb-8">This is the welcome page of our awesome application built with Inertia.js and React.</p>
+                        {auth.user ? (
+                            <Link
+                                href={dashboard()}
+                                className="btn-primary"
+                            >
+                                Go to Dashboard
+                            </Link>
+                        ) : (
+                            <>
+                                <Link
+                                    href={login()}
+                                    className="btn-secondary mr-4"
+                                >
+                                    Login
+                                </Link>
+                            </>
+                        )}
+                    </div>
+                </div>
+
             </div>
 
             <MobileMenu

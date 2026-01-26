@@ -1,0 +1,25 @@
+/* Hero section */
+.hero-section {
+    background-color: rgba(0, 0, 0, 0.5);
+    background-blend-mode: darken;
+    background-image: url('../images/hero.jpg');
+    background-size: cover;
+    height: 80vh; /* para que sea resposivo se suele colocar en vh en vez de px */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.title {
+    font-size: 6rem;
+    font-weight: 600;
+    color: #f1f1f1;
+    letter-spacing: 0.03em;
+}
+
+.title-sub {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #f1f1f1;
+    letter-spacing: 0.03em;
+}
