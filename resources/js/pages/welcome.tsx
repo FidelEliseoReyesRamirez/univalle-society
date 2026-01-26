@@ -124,7 +124,7 @@ export default function Welcome({
                 </div>
                 <div className="events-section dark:bg-blue-600 w-screen -mx-6 lg:-mx-8 items-center justify-center py-20 px-4 lg:px-0">
                     <div className="text-center">
-                        <h1 className="text-4xl font-bold mb-4">SICI - ISI</h1>
+                        <h1 className="font-display text-4xl font-bold mb-4">ÚLTIMOS EVENTOS</h1>
                         <p className="text-lg mb-8">This is the welcome page of our awesome application built with Inertia.js and React.</p>
                         {auth.user ? (
                             <Link
