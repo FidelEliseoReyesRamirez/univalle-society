@@ -82,8 +82,9 @@ export default function Welcome({
                         </div>
                     </nav>
                 </header>
-
+                <div className="hero-section"></div>
             </div>
+
         </>
     );
 }
