@@ -7,6 +7,7 @@ import { type SharedData } from '@/types';
 import AppLogoIconHor from '@/components/app-logo-hor-icon';
 import MenuIcon from '@/components/menu-icon';
 import MobileMenu from '@/components/mobile-menu';
+import '@/../css/special-button.css';
 
 export default function Welcome({
     canRegister = true,
@@ -35,27 +36,27 @@ export default function Welcome({
                             <div className='hidden md:flex gap-2 ml-4'>
                                 <Link
                                     href="#Noticias"
-                                    className='inline-block rounded-sm border border-transparent px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]'
+                                    className='inline-block rounded-sm px-5 py-1.5 text-sm leading-normal text-[#1b1b18]  dark:text-[#EDEDEC] hover:underline'
                                 >
-                                    Eventos
+                                    <b>EVENTOS</b>
                                 </Link>
                                 <Link
                                     href="#Noticias"
-                                    className='inline-block rounded-sm border border-transparent px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]'
+                                    className='inline-block rounded-sm px-5 py-1.5 text-sm leading-normal text-[#1b1b18]  dark:text-[#EDEDEC] hover:underline'
                                 >
-                                    Promociones
+                                    <b>PROMOCIONES</b>
                                 </Link>
                                 <Link
                                     href="#Noticias"
-                                    className='inline-block rounded-sm border border-transparent px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]'
+                                    className='inline-block rounded-sm px-5 py-1.5 text-sm leading-normal text-[#1b1b18]  dark:text-[#EDEDEC] hover:underline'
                                 >
-                                    Proyectos
+                                    <b>PROYECTOS</b>
                                 </Link>  
                                 <Link
                                     href="#Noticias"
-                                    className='inline-block rounded-sm border border-transparent px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]'
+                                    className='inline-block rounded-sm px-5 py-1.5 text-sm leading-normal text-[#1b1b18]  dark:text-[#EDEDEC] hover:underline'
                                 >
-                                    <b>Contáctanos</b>
+                                    <b>CONTÁCTANOS</b>
                                 </Link>
                             </div>
                         </div>
@@ -71,7 +72,7 @@ export default function Welcome({
                                         href={dashboard()}
                                         className="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
                                     >
-                                        Dashboard
+                                        DASHBOARD
                                     </Link>
                                 ) : (
                                     <>
@@ -79,14 +80,15 @@ export default function Welcome({
                                             href={login()}
                                             className="inline-block rounded-sm border border-transparent px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]"
                                         >
-                                            Login
+                                            Ingresar
                                         </Link>
                                         {canRegister && (
                                             <Link
                                                 href={register()}
-                                                className="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
+                                                id="special-button"
+                                                className="btn-11 relative inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
                                             >
-                                                Register
+                                                REGÍSTRATE
                                             </Link>
                                         )}
                                     </>
@@ -95,29 +97,31 @@ export default function Welcome({
                         </div>
                     </nav>
                 </header>
-                <div className="hero-section bg-amber-300 dark:bg-amber-600 w-full flex-grow flex items-center justify-center py-20 px-4 lg:px-0">
-                    <div className="hero-content text-center">
-                        <h1 className="text-4xl font-bold mb-4">Welcome to Our Application</h1>
-                        <p className="text-lg mb-8">This is the welcome page of our awesome application built with Inertia.js and React.</p>
-                        {auth.user ? (
-                            <Link
-                                href={dashboard()}
-                                className="btn-primary"
-                            >
-                                Go to Dashboard
-                            </Link>
-                        ) : (
-                            <>
+                <body>
+                    <div id="hero-section" className="bg-amber-300 dark:bg-amber-600 w-screen -mx-6 lg:-mx-8 grow flex items-center justify-center py-20 px-4 lg:px-0">
+                        <div className="hero-content text-center">
+                            <h1 className="text-4xl font-bold mb-4">Welcome to Our Application</h1>
+                            <p className="text-lg mb-8">This is the welcome page of our awesome application built with Inertia.js and React.</p>
+                            {auth.user ? (
                                 <Link
-                                    href={login()}
-                                    className="btn-secondary mr-4"
+                                    href={dashboard()}
+                                    className="btn-primary"
                                 >
-                                    Login
+                                    Go to Dashboard
                                 </Link>
-                            </>
-                        )}
+                            ) : (
+                                <>
+                                    <Link
+                                        href={login()}
+                                        className="btn-secondary mr-4"
+                                    >
+                                        Login
+                                    </Link>
+                                </>
+                            )}
+                        </div>
                     </div>
-                </div>
+                </body>
             </div>
 
             <MobileMenu
