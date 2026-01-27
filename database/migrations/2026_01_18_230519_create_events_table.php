@@ -14,20 +14,27 @@ return new class extends Migration
         Schema::create('events', function (Blueprint $table) {
             $table->id();
             $table->string('titulo');
-            $table->text('contenido');
+            $table->string('slug')->unique(); // Para URLs amigables: /eventos/conferencias-isi
+            $table->text('extracto')->nullable(); // Resumen corto para la vista previa en el Welcome
+            $table->longText('contenido');
             $table->string('imagen_ruta')->nullable();
-            
-            // Aquí guardamos el nombre de la plantilla React (ej: PostFacebook, CardAcademica)
-            $table->string('nombre_plantilla')->default('PostFacebook'); 
-            
+
+            // Nombre de la plantilla React (ej: PostFacebook, EventoCard, BannerHero)
+            $table->string('nombre_plantilla')->default('PostFacebook');
+
+            // Campos específicos para Eventos
+            $table->dateTime('fecha_evento')->nullable();
+            $table->string('ubicacion')->nullable(); // Ej: Auditorio, Zoom, Lab 1
+
             // Relaciones
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
-            
-            // Control de estado y eliminación lógica
+
+            // Control de visibilidad
             $table->boolean('esta_publicado')->default(true);
-            $table->boolean('esta_eliminado')->default(false); 
-            
+            $table->boolean('es_destacado')->default(false); // Para mostrarlo en el banner principal
+            $table->boolean('esta_eliminado')->default(false);
+
             $table->timestamps();
         });
     }

@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
             $table->string('nombre')->unique();
+            $table->string('slug')->unique(); // Para URLs: /blog/talleres
             $table->string('descripcion')->nullable();
-            $table->boolean('esta_eliminado')->default(false); // Eliminación lógica
+            $table->boolean('esta_eliminado')->default(false);
             $table->timestamps();
         });
     }

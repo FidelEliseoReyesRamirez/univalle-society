@@ -42,4 +42,15 @@ class User extends Authenticatable
             'esta_eliminado' => 'boolean',
         ];
     }
+    // Relación con Eventos
+    public function events(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Event::class);
+    }
+
+    // Relación con Proyectos
+    public function projects(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Project::class);
+    }
 }
