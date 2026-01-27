@@ -6,9 +6,17 @@ import { type SharedData } from '@/types';
 
 import AppLogoIconHor from '@/components/app-logo-hor-icon';
 import MenuIcon from '@/components/menu-icon';
+import LinkArrowIcon from '@/components/link-arrow-icon';
 import MobileMenu from '@/components/mobile-menu';
+import EventContainer from '@/components/event-container';
+
+//imagenes de ejemplo (más adelnate se usarán de la base de datos)
+import eventImg1 from '@/../images/event-cover-1.jpg';
+import eventImg2 from '@/../images/event-cover-2.jpeg';
+import eventImg3 from '@/../images/event-cover-3.png';
+
 import '@/../css/special-button.css';
-import '@/../css/hero-section.css';
+import '@/../css/home-page.css';
 
 export default function Welcome({
     canRegister = true,
@@ -27,9 +35,9 @@ export default function Welcome({
                     rel="stylesheet"
                 />
             </Head>
-            <div className=" min-h-screen items-center bg-[#FDFDFC] p-6 text-[#1b1b18] lg:justify-center lg:p-8 dark:bg-[#0a0a0a]">
+            <div className=" min-h-screen items-center p-6  lg:justify-center lg:p-8 bg-gray-200 ">
                 <header className="w-full text-sm not-has-[nav]:hidden lg:max-w-8xl">
-                    <nav className="fixed top-0 left-0 right-0 z-50 px-4 flex justify-between items-center gap-4 border-2 border-amber-600 bg-[#FDFDFC] dark:bg-[#0a0a0a]">
+                    <nav className="fixed top-0 left-0 right-0 z-50 px-4 flex justify-between items-center gap-4 bg-[#0a0a0a]">
                         <div className='flex items-center'>
                             <div>
                                 <AppLogoIconHor/>
@@ -122,27 +130,18 @@ export default function Welcome({
                         )}
                     </div>
                 </div>
-                <div className="events-section dark:bg-blue-600 w-screen -mx-6 lg:-mx-8 items-center justify-center py-20 px-4 lg:px-0">
-                    <div className="text-center">
-                        <h1 className="font-display text-4xl font-bold mb-4">ÚLTIMOS EVENTOS</h1>
-                        <p className="text-lg mb-8">This is the welcome page of our awesome application built with Inertia.js and React.</p>
-                        {auth.user ? (
-                            <Link
-                                href={dashboard()}
-                                className="btn-primary"
-                            >
-                                Go to Dashboard
-                            </Link>
-                        ) : (
-                            <>
-                                <Link
-                                    href={login()}
-                                    className="btn-secondary mr-4"
-                                >
-                                    Login
-                                </Link>
-                            </>
-                        )}
+                <div className="events-section text-black mx-10 md:mx-40 py-10 px-4 lg:px-0">                   
+                    <div className="justify-between flex items-baseline">
+                        <h1 className="font-display heading1">ÚLTIMOS EVENTOS</h1>
+                        <div className='hidden sm:flex justify-baseline gap-2 items-end'>
+                            <p className="text-lg">IR A LA PÁGINA DE NOTICIAS </p>
+                            <LinkArrowIcon/>
+                        </div>
+                    </div>
+                    <div className='flex gap-8 mt-6 items-center justify-center md:flex-row flex-col'>
+                        <EventContainer imageSrc={eventImg1}/>
+                        <EventContainer imageSrc={eventImg2}/>
+                        <EventContainer imageSrc={eventImg3}/>
                     </div>
                 </div>
 
