@@ -9,6 +9,7 @@ import MenuIcon from '@/components/menu-icon';
 import LinkArrowIcon from '@/components/link-arrow-icon';
 import MobileMenu from '@/components/mobile-menu';
 import EventContainer from '@/components/event-container';
+import Footer from '@/components/footer';
 
 //imagenes de ejemplo (más adelnate se usarán de la base de datos)
 import eventImg1 from '@/../images/event-cover-1.jpg';
@@ -166,7 +167,7 @@ Somos un espacio para aprender, desarrollar habilidades y crear proyectos con im
                     </div>
                 </div>
             </div>
-
+            <Footer />
             <MobileMenu
                 isOpen={isSideOpen}
                 onClose={() => setIsSideOpen(false)}
