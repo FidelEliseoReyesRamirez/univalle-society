@@ -30,9 +30,27 @@
     font-weight: 700;
 }
 
-.headingBig{
+.headingBig {
     font-size: 7rem;
     font-weight: 700;
+}
+
+@media (max-width: 1024px) {
+    .headingBig {
+        font-size: 5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .headingBig {
+        font-size: 3rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .headingBig {
+        font-size: 2rem;
+    }
 }
 
 /* About section */

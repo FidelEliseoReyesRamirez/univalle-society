@@ -1,4 +1,7 @@
 import ".././../css/footer.css";
+import fb from '@/../icons/facebook-icon.svg';
+import ig from '@/../icons/insta-icon.svg';
+import tt from '@/../icons/tiktok-icon.svg';
 
 const Footer = () => {
   return (
@@ -67,13 +70,13 @@ const Footer = () => {
             <h1>Social</h1>
             <ul>
               <li>
-                <img src="https://svgshare.com/i/5fq.svg" alt="social" />
+                <img src={fb} alt="social" />
               </li>
               <li>
-                <img src="https://svgshare.com/i/5eA.svg" alt="social" />
+                <img src={ig} alt="social" />
               </li>
               <li>
-                <img src="https://svgshare.com/i/5f_.svg" alt="social" />
+                <img src={tt} alt="social" />
               </li>
             </ul>
           </div>

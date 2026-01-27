@@ -83,7 +83,11 @@
     
     transition: all 0.3s ease;  
 }
-
+@media (max-width: 640px) {
+  .btn-13 {
+    padding:0.05rem;
+  }
+}
 .btn-13:hover {
         text-decoration: none;
         color: black;

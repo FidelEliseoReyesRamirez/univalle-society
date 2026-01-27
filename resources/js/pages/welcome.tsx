@@ -146,8 +146,8 @@ export default function Welcome({
                         <EventContainer imageSrc={eventImg3}/>
                     </div>
                 </div>
-                <div className='about-section w-screen flex justify-center text-white md:px-80 lg:px-0 -mx-6 lg:-mx-8 md:mb-16'>
-                    <div className='w-170'>
+                <div className='about-section w-screen md:flex justify-center text-white md:px-80 lg:px-0 -mx-6 lg:-mx-8 md:mb-16'>
+                    <div className='w-auto md:w-170'>
                         <img src={aboutImg} alt="Ilustración Sobre Nosotros"/>
                     </div>
                     <div className='text-start pl-20 flex items-center w-1/2 text-gray-200'>

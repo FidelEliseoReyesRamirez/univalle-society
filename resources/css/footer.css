@@ -61,6 +61,13 @@ html, body {
   padding-right: 5px;
 }
 
+.social ul li img {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  padding: 5px;
+}
+
 .clearfix {
   clear: both;
 }
