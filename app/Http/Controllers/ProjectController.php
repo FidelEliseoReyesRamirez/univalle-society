@@ -9,12 +9,12 @@ use Inertia\Inertia;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 
-class EventController extends Controller
+class ProjectController extends Controller
 {
     public function index()
     {
-        return Inertia::render('events/index', [
-            'events' => Event::with('category')
+        return Inertia::render('projects/index', [
+            'projects' => Event::with('category')
                 ->where('esta_eliminado', false)
                 ->latest()
                 ->get()
@@ -23,8 +23,9 @@ class EventController extends Controller
 
     public function create()
     {
-        return Inertia::render('events/create', [
-            'categories' => Category::where('esta_eliminado', false)->get()
+        return Inertia::render('projects/create', [
+            // Ahora cargamos TODAS las categorías disponibles
+            'categories' => Category::all()
         ]);
     }
 
@@ -35,22 +36,21 @@ class EventController extends Controller
             'extracto' => 'required|string|max:500',
             'contenido' => 'required|string',
             'category_id' => 'required|exists:categories,id',
-            'fecha_evento' => 'nullable|date',
             'ubicacion' => 'nullable|string',
-            'nombre_plantilla' => 'required|string',
-            'imagen' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'imagen' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         if ($request->hasFile('imagen')) {
-            $path = $request->file('imagen')->store('events', 'public');
+            $path = $request->file('imagen')->store('projects', 'public');
             $validated['imagen_ruta'] = '/storage/' . $path;
         }
 
         $validated['user_id'] = Auth::id();
         $validated['slug'] = Str::slug($request->titulo);
+        $validated['nombre_plantilla'] = 'ProjectCard';
 
         Event::create($validated);
 
-        return redirect()->route('eventos.index');
+        return redirect()->route('proyectos.index');
     }
 }

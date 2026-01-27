@@ -5,83 +5,80 @@ import { dashboard, login, register } from '@/routes';
 import { type SharedData } from '@/types';
 
 import AppLogoIconHor from '@/components/app-logo-hor-icon';
-import MenuIcon from '@/components/menu-icon';
-import LinkArrowIcon from '@/components/link-arrow-icon';
-import MobileMenu from '@/components/mobile-menu';
 import EventContainer from '@/components/event-container';
 import Footer from '@/components/footer';
+import LinkArrowIcon from '@/components/link-arrow-icon';
+import MenuIcon from '@/components/menu-icon';
+import MobileMenu from '@/components/mobile-menu';
 
-//imagenes de ejemplo (más adelnate se usarán de la base de datos)
-import eventImg1 from '@/../images/event-cover-1.jpg';
-import eventImg2 from '@/../images/event-cover-2.jpeg';
-import eventImg3 from '@/../images/event-cover-3.png';
 import aboutImg from '@/../images/ilustration_1.png';
 
-import '@/../css/special-button.css';
 import '@/../css/home-page.css';
+import '@/../css/special-button.css';
+
+interface WelcomeProps {
+    canRegister?: boolean;
+    recentEvents?: any[];
+}
 
 export default function Welcome({
     canRegister = true,
-}: {
-    canRegister?: boolean;
-}) {
+    recentEvents = [],
+}: WelcomeProps) {
     const { auth } = usePage<SharedData>().props;
     const [isSideOpen, setIsSideOpen] = useState(false);
 
     return (
         <>
-            <Head title="Welcome">
+            <Head title="Bienvenido">
                 <link rel="preconnect" href="https://fonts.bunny.net" />
                 <link
                     href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600"
                     rel="stylesheet"
                 />
             </Head>
-            <div className=" min-h-screen items-center p-6  lg:justify-center lg:p-8 bg-gray-200 ">
-                <header className="w-full text-sm not-has-[nav]:hidden lg:max-w-8xl">
-                    <nav className="fixed top-0 left-0 right-0 z-50 px-4 flex justify-between items-center gap-4 bg-[#0a0a0a]">
-                        <div className='flex items-center'>
+            <div className="min-h-screen items-center bg-gray-200 p-6 lg:justify-center lg:p-8">
+                <header className="lg:max-w-8xl w-full text-sm not-has-[nav]:hidden">
+                    <nav className="fixed top-0 right-0 left-0 z-50 flex items-center justify-between gap-4 bg-[#0a0a0a] px-4">
+                        <div className="flex items-center">
                             <div>
-                                <AppLogoIconHor/>
+                                <AppLogoIconHor />
                             </div>
-                            <div className='hidden md:flex gap-2 ml-4'>
+                            <div className="ml-4 hidden gap-6 md:flex">
                                 <Link
-                                    href="#Noticias"
-                                    className='inline-block rounded-sm px-5 py-1.5 text-sm leading-normal text-[#1b1b18]  dark:text-[#EDEDEC] hover:underline'
+                                    href="#Eventos"
+                                    className="text-sm font-bold text-white hover:underline"
                                 >
-                                    <b>EVENTOS</b>
+                                    EVENTOS
                                 </Link>
                                 <Link
-                                    href="#Noticias"
-                                    className='inline-block rounded-sm px-5 py-1.5 text-sm leading-normal text-[#1b1b18]  dark:text-[#EDEDEC] hover:underline'
+                                    href="#Proyectos"
+                                    className="text-sm font-bold text-white hover:underline"
                                 >
-                                    <b>PROMOCIONES</b>
+                                    PROYECTOS
                                 </Link>
                                 <Link
-                                    href="#Noticias"
-                                    className='inline-block rounded-sm px-5 py-1.5 text-sm leading-normal text-[#1b1b18]  dark:text-[#EDEDEC] hover:underline'
+                                    href="#Contacto"
+                                    className="text-sm font-bold text-white hover:underline"
                                 >
-                                    <b>PROYECTOS</b>
-                                </Link>  
-                                <Link
-                                    href="#Noticias"
-                                    className='inline-block rounded-sm px-5 py-1.5 text-sm leading-normal text-[#1b1b18]  dark:text-[#EDEDEC] hover:underline'
-                                >
-                                    <b>CONTÁCTANOS</b>
+                                    CONTÁCTANOS
                                 </Link>
                             </div>
                         </div>
-                        <div className='flex'>
-                            <div className='md:hidden flex items-center'>
-                                    <button onClick={() => setIsSideOpen(true)} aria-label="Open menu" className="p-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800">
-                                        <MenuIcon />
-                                    </button>
-                                </div>                                          
-                            <div className='flex hidden md:flex gap-2 ml-4'>
+                        <div className="flex gap-4">
+                            <div className="flex items-center md:hidden">
+                                <button
+                                    onClick={() => setIsSideOpen(true)}
+                                    className="text-white"
+                                >
+                                    <MenuIcon />
+                                </button>
+                            </div>
+                            <div className="hidden gap-2 md:flex">
                                 {auth.user ? (
                                     <Link
                                         href={dashboard()}
-                                        className="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
+                                        className="rounded border border-white/30 px-4 py-1.5 text-xs text-white hover:bg-white/10"
                                     >
                                         DASHBOARD
                                     </Link>
@@ -89,15 +86,15 @@ export default function Welcome({
                                     <>
                                         <Link
                                             href={login()}
-                                            className="inline-block rounded-sm border border-transparent px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]"
+                                            className="px-4 py-1.5 text-xs text-white hover:underline"
                                         >
-                                            Ingresar
+                                            INGRESAR
                                         </Link>
                                         {canRegister && (
                                             <Link
                                                 href={register()}
                                                 id="special-button"
-                                                className="btn-11 relative inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
+                                                className="btn-11 rounded px-4 py-1.5 text-xs text-white"
                                             >
                                                 REGÍSTRATE
                                             </Link>
@@ -109,59 +106,73 @@ export default function Welcome({
                     </nav>
                 </header>
 
-                <div className="hero-section w-screen -mx-6 lg:-mx-8 h-1000px items-center justify-center py-20 px-4 lg:px-0">
+                <div className="hero-section h-1000px -mx-6 w-screen items-center justify-center px-4 py-20 lg:-mx-8 lg:px-0">
                     <div className="text-center">
                         <h1 className="title font-display">SICI - ISI</h1>
-                        <p className="title-sub font-display text-lg mb-16">SOCIEDAD DE INVESTIGACIÓN, CIENCIA E INNOVACIÓN DE INGENIERÍA EN SISTEMAS INFORMÁTICOS</p>
-                        {auth.user ? (
-                            <Link
-                                href={dashboard()}
-                                className="btn-primary"
-                            >
-                                Ir a Dashboard
-                            </Link>
+                        <p className="title-sub mb-16 font-display text-lg">
+                            SOCIEDAD DE INVESTIGACIÓN, CIENCIA E INNOVACIÓN DE
+                            INGENIERÍA EN SISTEMAS INFORMÁTICOS
+                        </p>
+                        <Link
+                            href={auth.user ? dashboard() : login()}
+                            className="btn-primary"
+                        >
+                            {auth.user ? 'IR AL DASHBOARD' : 'EMPEZAR AHORA'}
+                        </Link>
+                    </div>
+                </div>
+
+                <div className="events-section mx-10 px-4 py-10 text-gray-800 md:mx-40 md:mb-8 lg:px-0">
+                    <div className="flex items-baseline justify-between border-b border-gray-300 pb-4">
+                        <h1 className="heading1 font-display uppercase">
+                            Eventos más recientes
+                        </h1>
+                        <Link
+                            href="/eventos"
+                            className="flex items-center gap-2 text-sm font-bold hover:opacity-70"
+                        >
+                            VER TODO EL BLOG <LinkArrowIcon />
+                        </Link>
+                    </div>
+                    <div className="mt-8 flex flex-col items-center justify-center gap-8 md:flex-row">
+                        {recentEvents.length > 0 ? (
+                            recentEvents.map((event) => (
+                                <EventContainer
+                                    key={event.id}
+                                    eventData={event}
+                                />
+                            ))
                         ) : (
-                            <>
-                                <Link
-                                    href={login()}
-                                    className="btn-12 btn-secondary mr-4"
-                                >
-                                    INGRESAR
-                                </Link>
-                            </>
+                            <p className="py-10 text-gray-500 italic">
+                                No hay publicaciones recientes disponibles.
+                            </p>
                         )}
                     </div>
                 </div>
-                <div className="events-section text-gray-800 mx-10 md:mx-40 py-10 px-4 lg:px-0 md:mb-8">                   
-                    <div className="justify-between flex items-baseline">
-                        <h1 className="font-display heading1">EVENTOS MÁS RECIENTES</h1>
-                        <div className='hidden sm:flex justify-baseline gap-2 items-end'>
-                            <p className="text-lg">IR A LA PÁGINA DE NOTICIAS </p>
-                            <LinkArrowIcon/>
-                        </div>
-                    </div>
-                    <div className='flex gap-8 mt-6 items-center justify-center md:flex-row flex-col'>
-                        <EventContainer imageSrc={eventImg1}/>
-                        <EventContainer imageSrc={eventImg2}/>
-                        <EventContainer imageSrc={eventImg3}/>
-                    </div>
-                </div>
-                <div className='about-section w-screen md:flex justify-center text-white md:px-80 lg:px-0 -mx-6 lg:-mx-8 md:mb-16'>
-                    <div className='w-auto md:w-170'>
-                        <img src={aboutImg} alt="Ilustración Sobre Nosotros"/>
-                    </div>
-                    <div className='text-start pl-20 flex items-center w-1/2 text-gray-200'>
-                        <div>
-                            <h1 className="headingBig font-display heading1">¿QUÉ HACEMOS?</h1><b>
-                            <p>LA CREATIVIDAD ES LA MEJOR ARMA.</p>
-                            <p className='mt-2 text-lg mb-20'>Promovemos la investigación y la innovación tecnológica a través del trabajo colaborativo.
-Somos un espacio para aprender, desarrollar habilidades y crear proyectos con impacto real en la sociedad.</p></b>
 
+                <div className="about-section -mx-6 w-screen justify-center text-white md:mb-16 md:flex md:px-80 lg:-mx-8 lg:px-0">
+                    <div className="w-auto md:w-170">
+                        <img src={aboutImg} alt="SICI Sobre Nosotros" />
+                    </div>
+                    <div className="flex w-1/2 items-center pl-20 text-start text-gray-200">
+                        <div>
+                            <h1 className="headingBig heading1 font-display">
+                                ¿QUÉ HACEMOS?
+                            </h1>
+                            <p className="mt-4 font-bold">
+                                LA CREATIVIDAD ES LA MEJOR ARMA.
+                            </p>
+                            <p className="mt-2 mb-10 text-lg">
+                                Promovemos la investigación y la innovación
+                                tecnológica a través del trabajo colaborativo.
+                                Somos un espacio para aprender, desarrollar
+                                habilidades y crear proyectos con impacto real.
+                            </p>
                             <Link
-                                href={register()}
+                                href="/contacto"
                                 className="btn-13 btn-secondary"
                             >
-                                CONTÁCTATE CON NOSOTROS
+                                CONTÁCTATE
                             </Link>
                         </div>
                     </div>
@@ -174,7 +185,6 @@ Somos un espacio para aprender, desarrollar habilidades y crear proyectos con im
                 auth={auth}
                 canRegister={canRegister}
             />
-
         </>
     );
 }

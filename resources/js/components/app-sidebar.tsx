@@ -1,6 +1,3 @@
-import { Link, usePage } from '@inertiajs/react';
-import { LayoutGrid, Users } from 'lucide-react';
-
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import {
@@ -14,13 +11,20 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
+import {
+    CalendarDays,
+    FolderCode,
+    LayoutGrid,
+    Tags,
+    Users,
+} from 'lucide-react';
 
 import AppLogo from './app-logo';
 
 export function AppSidebar() {
     const { auth } = usePage().props as any;
 
-    // Items que todos ven
     const mainNavItems: NavItem[] = [
         {
             title: 'Dashboard',
@@ -29,11 +33,30 @@ export function AppSidebar() {
         },
     ];
 
-    // Si es admin, inyectamos el acceso al CRUD de usuarios
+    // Acceso para Admin y Gestor
+    if (['admin', 'gestor'].includes(auth?.user?.role)) {
+        mainNavItems.push({
+            title: 'Gestión Eventos',
+            href: '/eventos',
+            icon: CalendarDays,
+        });
+        mainNavItems.push({
+            title: 'Gestión Proyectos',
+            href: '/proyectos',
+            icon: FolderCode,
+        });
+        mainNavItems.push({
+            title: 'Categorías',
+            href: '/categorias',
+            icon: Tags,
+        });
+    }
+
+    // Solo Admin ve usuarios
     if (auth?.user?.role === 'admin') {
         mainNavItems.push({
             title: 'Gestión Usuarios',
-            href: '/usuarios', // Ruta manual para evitar líos de Ziggy
+            href: '/usuarios',
             icon: Users,
         });
     }

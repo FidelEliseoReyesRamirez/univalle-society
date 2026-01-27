@@ -1,16 +1,15 @@
 <?php
 
-namespace App\Models; // <--- Asegúrate de que esta línea sea idéntica
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Category extends Model
 {
     protected $fillable = ['nombre', 'slug', 'descripcion', 'esta_eliminado'];
 
-    public function events(): HasMany
-    {
-        return $this->hasMany(Event::class);
-    }
+    // Forzamos que Laravel trate esta columna como booleano
+    protected $casts = [
+        'esta_eliminado' => 'boolean',
+    ];
 }
