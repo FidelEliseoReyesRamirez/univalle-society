@@ -26,22 +26,26 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   tag: {
     color: "rgb(240, 42, 52)",
-    fontWeight: 700,
+    fontWeight: 800,
     letterSpacing: "0.5px",
+    fontSize: "14px",
   },
   date: {
     color: "#555",
+    fontSize: "14px",
+    fontWeight: 700,
   },
   title: {
-    fontSize: "18px",
+    fontSize: "24px",
     fontWeight: 700,
     lineHeight: 1.3,
     margin: "0 0 8px 0",
   },
   description: {
     fontSize: "14px",
+    fontWeight: 600,
     color: "#333",
-    lineHeight: 1.5,
+    lineHeight: 2,
     margin: 0,
   },
 };

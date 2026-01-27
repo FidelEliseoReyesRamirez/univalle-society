@@ -25,14 +25,19 @@
 }
 
 /* Events section */
-
-.events-section {
-
-}
-
 .heading1{
     font-size: 3rem;
     font-weight: 700;
 }
 
-/* Home Page */
+.headingBig{
+    font-size: 7rem;
+    font-weight: 700;
+}
+
+/* About section */
+.about-section {
+    background-color: #f02a34;
+    padding-left:10%;
+    padding-right:10%;
+}

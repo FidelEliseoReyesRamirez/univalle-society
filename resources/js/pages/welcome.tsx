@@ -14,6 +14,7 @@ import EventContainer from '@/components/event-container';
 import eventImg1 from '@/../images/event-cover-1.jpg';
 import eventImg2 from '@/../images/event-cover-2.jpeg';
 import eventImg3 from '@/../images/event-cover-3.png';
+import aboutImg from '@/../images/ilustration_1.png';
 
 import '@/../css/special-button.css';
 import '@/../css/home-page.css';
@@ -130,9 +131,9 @@ export default function Welcome({
                         )}
                     </div>
                 </div>
-                <div className="events-section text-black mx-10 md:mx-40 py-10 px-4 lg:px-0">                   
+                <div className="events-section text-gray-800 mx-10 md:mx-40 py-10 px-4 lg:px-0 md:mb-8">                   
                     <div className="justify-between flex items-baseline">
-                        <h1 className="font-display heading1">ÚLTIMOS EVENTOS</h1>
+                        <h1 className="font-display heading1">EVENTOS MÁS RECIENTES</h1>
                         <div className='hidden sm:flex justify-baseline gap-2 items-end'>
                             <p className="text-lg">IR A LA PÁGINA DE NOTICIAS </p>
                             <LinkArrowIcon/>
@@ -144,7 +145,26 @@ export default function Welcome({
                         <EventContainer imageSrc={eventImg3}/>
                     </div>
                 </div>
+                <div className='about-section w-screen flex justify-center text-white md:px-80 lg:px-0 -mx-6 lg:-mx-8 md:mb-16'>
+                    <div className='w-170'>
+                        <img src={aboutImg} alt="Ilustración Sobre Nosotros"/>
+                    </div>
+                    <div className='text-start pl-20 flex items-center w-1/2 text-gray-200'>
+                        <div>
+                            <h1 className="headingBig font-display heading1">¿QUÉ HACEMOS?</h1><b>
+                            <p>LA CREATIVIDAD ES LA MEJOR ARMA.</p>
+                            <p className='mt-2 text-lg mb-20'>Promovemos la investigación y la innovación tecnológica a través del trabajo colaborativo.
+Somos un espacio para aprender, desarrollar habilidades y crear proyectos con impacto real en la sociedad.</p></b>
 
+                            <Link
+                                href={register()}
+                                className="btn-13 btn-secondary"
+                            >
+                                CONTÁCTATE CON NOSOTROS
+                            </Link>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <MobileMenu
