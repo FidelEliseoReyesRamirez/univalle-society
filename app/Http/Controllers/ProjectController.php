@@ -78,6 +78,7 @@ class ProjectController extends Controller
         $validated['user_id'] = Auth::id();
         $validated['slug'] = Str::slug($request->titulo);
         $validated['nombre_plantilla'] = 'ProjectCard';
+        $validated['esta_publicado'] = true;
 
         Event::create($validated);
         return redirect()->route('proyectos.index');

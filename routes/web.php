@@ -12,16 +12,22 @@ use Laravel\Fortify\Features;
 Route::get('/', function () {
     return Inertia::render('welcome', [
         'canRegister' => Features::enabled(Features::registration()),
+
+        // EVENTOS: Solo los que NO son ProjectCard
         'recentEvents' => Event::with(['category'])
+            ->where('nombre_plantilla', '!=', 'ProjectCard')
             ->where('esta_publicado', true)
             ->where('esta_eliminado', false)
-            // FILTRO ESTRICTO: No mostrar si la categoría está eliminada
-            ->whereHas('category', function ($query) {
-                $query->where('esta_eliminado', false);
-            })
-            ->latest()
-            ->take(3)
-            ->get(),
+            ->whereHas('category', fn($q) => $q->where('esta_eliminado', false))
+            ->latest()->take(3)->get(),
+
+        // PROYECTOS: Solo los que SON ProjectCard
+        'recentProjects' => Event::with(['category'])
+            ->where('nombre_plantilla', 'ProjectCard')
+            ->where('esta_publicado', true)
+            ->where('esta_eliminado', false)
+            ->whereHas('category', fn($q) => $q->where('esta_eliminado', false))
+            ->latest()->take(3)->get(),
     ]);
 })->name('home');
 
