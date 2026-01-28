@@ -15,7 +15,13 @@ Route::get('/', function () {
         'recentEvents' => Event::with(['category'])
             ->where('esta_publicado', true)
             ->where('esta_eliminado', false)
-            ->latest()->take(3)->get(),
+            // FILTRO ESTRICTO: No mostrar si la categoría está eliminada
+            ->whereHas('category', function ($query) {
+                $query->where('esta_eliminado', false);
+            })
+            ->latest()
+            ->take(3)
+            ->get(),
     ]);
 })->name('home');
 
@@ -37,7 +43,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/{id}', [EventController::class, 'update'])->name('update');
 
             Route::delete('/{evento}', [EventController::class, 'destroy'])->name('destroy');
-            Route::patch('/{evento}/restaurar', [EventController::class, 'restore'])->name('restore');
+            Route::put('/{id}/restore', [EventController::class, 'restore'])->name('restore');
         });
 
         // --- PROYECTOS ---
@@ -70,6 +76,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/{user}/block', [UserController::class, 'block'])->name('block');
             Route::post('/{user}/unlock', [UserController::class, 'unlock'])->name('unlock');
             Route::patch('/{user}/role', [UserController::class, 'updateRole'])->name('role');
+            // Corregido: Trashead suele ser GET para mostrar la vista
             Route::get('/papelera', [UserController::class, 'trashed'])->name('trashed');
             Route::post('/{user}/restore', [UserController::class, 'restore'])->name('restore');
         });

@@ -12,4 +12,8 @@ class Category extends Model
     protected $casts = [
         'esta_eliminado' => 'boolean',
     ];
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 }

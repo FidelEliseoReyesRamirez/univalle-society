@@ -20,48 +20,89 @@ class EventController extends Controller
 
     public function index(Request $request)
     {
+        $search = $request->query('search');
+        $isTrashedView = $request->query('trashed') === 'true';
+
         $query = Event::with('category')->where('nombre_plantilla', '!=', 'ProjectCard');
 
-        if ($request->trashed === 'true') {
-            $query->where('esta_eliminado', true);
-        } else {
-            $query->where('esta_eliminado', false);
+        // Filtramos por el estado de eliminación del evento
+        $query->where('esta_eliminado', $isTrashedView);
+
+        if ($search) {
+            $query->where('titulo', 'like', "%{$search}%");
         }
 
-        if ($request->search) {
-            $query->where('titulo', 'LIKE', '%' . $request->search . '%');
+        if ($request->category_id && $request->category_id !== 'all') {
+            $query->where('category_id', $request->category_id);
+        }
+
+        if ($request->dateFrom) {
+            $query->whereDate('created_at', '>=', $request->dateFrom);
+        }
+
+        if ($request->dateTo) {
+            $query->whereDate('created_at', '<=', $request->dateTo);
         }
 
         return Inertia::render('events/index', [
-            'events' => $query->latest()->get(),
-            'filters' => $request->only(['search', 'trashed'])
+            'events' => $query->orderBy('titulo', 'asc')->paginate(10)->withQueryString(),
+            'categories' => Category::where('esta_eliminado', false)->orderBy('nombre', 'asc')->get(),
+            'filters' => $request->only(['search', 'trashed', 'dateFrom', 'dateTo', 'category_id'])
         ]);
     }
 
     public function create()
     {
         return Inertia::render('events/create', [
-            'categories' => Category::where('esta_eliminado', false)->get()
+            'categories' => Category::where('esta_eliminado', false)->orderBy('nombre', 'asc')->get()
         ]);
     }
 
     public function edit($id)
     {
         $evento = Event::findOrFail($this->getRealId($id));
-
         return Inertia::render('events/edit', [
             'event' => $evento,
             'categories' => Category::where('esta_eliminado', false)
                 ->orWhere('id', $evento->category_id)
+                ->orderBy('nombre', 'asc')
                 ->get()
         ]);
+    }
+
+    public function store(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'titulo' => 'required|string|max:255',
+                'extracto' => 'required|string|max:500',
+                'contenido' => 'required|string',
+                'category_id' => 'required|exists:categories,id',
+                'fecha_evento' => 'nullable|date',
+                'ubicacion' => 'nullable|string',
+                'nombre_plantilla' => 'required|string',
+                'imagen' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            ]);
+
+            if ($request->hasFile('imagen')) {
+                $path = $request->file('imagen')->store('events', 'public');
+                $validated['imagen_ruta'] = '/storage/' . $path;
+            }
+
+            $validated['slug'] = Str::slug($request->titulo);
+            $validated['user_id'] = $request->user()->id;
+
+            Event::create(collect($validated)->except(['imagen'])->toArray());
+            return redirect()->to('/eventos')->with('success', 'Evento creado con éxito');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Error al guardar: ' . $e->getMessage()]);
+        }
     }
 
     public function update(Request $request, $id)
     {
         try {
             $evento = Event::findOrFail($this->getRealId($id));
-
             $validated = $request->validate([
                 'titulo' => 'required|string|max:255',
                 'extracto' => 'required|string|max:500',
@@ -82,10 +123,7 @@ class EventController extends Controller
             }
 
             $validated['slug'] = Str::slug($request->titulo);
-
-            // Asegúrate de que 'nombre_plantilla' esté en el $fillable del modelo Event
             $evento->update(collect($validated)->except(['imagen'])->toArray());
-
             return redirect()->to('/eventos');
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'Error al actualizar: ' . $e->getMessage()]);
@@ -100,7 +138,17 @@ class EventController extends Controller
 
     public function restore($id)
     {
-        Event::findOrFail($this->getRealId($id))->update(['esta_eliminado' => false]);
+        $realId = $this->getRealId($id);
+        $evento = Event::with('category')->findOrFail($realId);
+
+        // Bloqueo si la categoría está eliminada
+        if ($evento->category && $evento->category->esta_eliminado) {
+            return back()->withErrors([
+                'error' => "No se puede restaurar: la categoría '{$evento->category->nombre}' está eliminada. Restáurala primero."
+            ]);
+        }
+
+        $evento->update(['esta_eliminado' => false]);
         return redirect()->route('eventos.index', ['trashed' => 'true']);
     }
 }

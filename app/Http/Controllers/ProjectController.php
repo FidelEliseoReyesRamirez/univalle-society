@@ -13,31 +13,38 @@ class ProjectController extends Controller
 {
     public function index(Request $request)
     {
-        // Añadimos la restricción de plantilla para que SOLO traiga proyectos
         $query = Event::with('category')
             ->where('nombre_plantilla', 'ProjectCard');
 
-        if ($request->trashed == 'true') {
-            $query->where('esta_eliminado', true);
-        } else {
-            $query->where('esta_eliminado', false);
-        }
+        $isTrashedView = $request->query('trashed') === 'true';
+        $query->where('esta_eliminado', $isTrashedView);
 
-        // ... resto de tus filtros (search, date)
         if ($request->search) {
             $query->where('titulo', 'LIKE', '%' . $request->search . '%');
         }
 
+        if ($request->category_id && $request->category_id !== 'all') {
+            $query->where('category_id', $request->category_id);
+        }
+
+        if ($request->dateFrom) {
+            $query->whereDate('created_at', '>=', $request->dateFrom);
+        }
+
+        if ($request->dateTo) {
+            $query->whereDate('created_at', '<=', $request->dateTo);
+        }
+
         return Inertia::render('projects/index', [
-            'projects' => $query->latest()->get(),
-            'filters' => $request->only(['search', 'date', 'trashed'])
+            'projects' => $query->orderBy('titulo', 'asc')->paginate(10)->withQueryString(),
+            'categories' => Category::where('esta_eliminado', false)->orderBy('nombre', 'asc')->get(),
+            'filters' => $request->only(['search', 'dateFrom', 'dateTo', 'trashed', 'category_id'])
         ]);
     }
 
     public function create()
     {
         return Inertia::render('projects/create', [
-            // Solo mostramos categorías NO eliminadas para nuevos proyectos
             'categories' => Category::where('esta_eliminado', false)->get()
         ]);
     }
@@ -46,7 +53,6 @@ class ProjectController extends Controller
     {
         return Inertia::render('projects/edit', [
             'proyecto' => $proyecto,
-            // Mostramos categorías activas O la que ya tiene asignada el proyecto (aunque esté eliminada)
             'categories' => Category::where('esta_eliminado', false)
                 ->orWhere('id', $proyecto->category_id)
                 ->get()
@@ -59,7 +65,7 @@ class ProjectController extends Controller
             'titulo' => 'required|string|max:255',
             'extracto' => 'required|string|max:500',
             'contenido' => 'required|string',
-            'category_id' => 'required|exists:categories,id', // Laravel valida que el ID exista
+            'category_id' => 'required|exists:categories,id',
             'ubicacion' => 'nullable|string',
             'imagen' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
@@ -74,7 +80,6 @@ class ProjectController extends Controller
         $validated['nombre_plantilla'] = 'ProjectCard';
 
         Event::create($validated);
-
         return redirect()->route('proyectos.index');
     }
 
@@ -96,7 +101,6 @@ class ProjectController extends Controller
 
         $validated['slug'] = Str::slug($request->titulo);
         $proyecto->update($validated);
-
         return redirect()->route('proyectos.index');
     }
 

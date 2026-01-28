@@ -15,23 +15,25 @@ class CategoryController extends Controller
     public function index(Request $request)
     {
         $search = $request->query('search');
-        // Convertimos el string 'true'/'false' a booleano
         $isTrashedView = $request->query('trashed') === 'true';
 
         $query = Category::query();
 
-        // Filtro manual por tu columna booleana
+        // Filtro por estado
         $query->where('esta_eliminado', $isTrashedView);
 
         if ($search) {
             $query->where('nombre', 'like', "%{$search}%");
         }
 
+        // Cambiamos latest() por orderBy para orden alfabético
         return Inertia::render('categories/index', [
-            'categories' => $query->latest()->get(),
+            'categories' => $query->orderBy('nombre', 'asc')
+                ->paginate(10)
+                ->withQueryString(),
             'filters' => [
                 'search' => $search,
-                'trashed' => $request->query('trashed'), // Mantenemos el string para la vista
+                'trashed' => $request->query('trashed'),
             ],
         ]);
     }

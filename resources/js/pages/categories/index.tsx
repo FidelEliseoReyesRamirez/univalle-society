@@ -11,6 +11,8 @@ import AppLayout from '@/layouts/app-layout';
 import { Head, router, useForm } from '@inertiajs/react';
 import {
     CheckCircle,
+    ChevronLeft,
+    ChevronRight,
     Pencil,
     RotateCcw,
     Search,
@@ -25,7 +27,7 @@ export default function CategoriesIndex({
     categories,
     filters,
 }: {
-    categories: any[];
+    categories: any; // Ahora es un objeto de paginación
     filters: any;
 }) {
     const [isEditing, setIsEditing] = useState<number | null>(null);
@@ -66,14 +68,15 @@ export default function CategoriesIndex({
         <AppLayout breadcrumbs={[{ title: 'Categorías', href: '/categorias' }]}>
             <Head title="Categorías" />
 
-            {/* max-w-5xl es más angosto para evitar el scrollbar inferior */}
             <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4 md:p-8">
                 {/* Cabecera */}
                 <div className="flex items-center justify-between">
                     <h2
                         className={`text-2xl font-bold ${isTrashedView ? 'text-destructive' : 'text-primary'}`}
                     >
-                        {isTrashedView ? 'Papelera' : 'Categorías'}
+                        {isTrashedView
+                            ? 'Papelera de Categorías'
+                            : 'Categorías'}
                     </h2>
                     <Button
                         variant="outline"
@@ -97,8 +100,8 @@ export default function CategoriesIndex({
                 <div className="relative max-w-sm">
                     <Search className="absolute top-2.5 left-2.5 h-4 w-4 text-muted-foreground" />
                     <input
-                        className="flex h-10 w-full rounded-md border border-input bg-background py-2 pr-3 pl-8 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                        placeholder="Buscar..."
+                        className="flex h-10 w-full rounded-md border border-input bg-background py-2 pr-3 pl-8 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                        placeholder="Buscar categoría..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                     />
@@ -155,7 +158,9 @@ export default function CategoriesIndex({
                                         size="sm"
                                         disabled={processing}
                                     >
-                                        {isEditing ? 'Guardar' : 'Crear'}
+                                        {isEditing
+                                            ? 'Guardar Cambios'
+                                            : 'Crear Categoría'}
                                     </Button>
                                     {isEditing && (
                                         <Button
@@ -190,75 +195,142 @@ export default function CategoriesIndex({
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {categories.map((cat) => (
-                                    <TableRow key={cat.id}>
-                                        <TableCell className="font-semibold">
-                                            <div className="flex items-center gap-2 text-left">
-                                                <Tag
-                                                    size={14}
-                                                    className="text-primary/60"
-                                                />
-                                                {cat.nombre}
-                                            </div>
+                                {categories.data.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell
+                                            colSpan={3}
+                                            className="h-24 text-center text-muted-foreground"
+                                        >
+                                            No se encontraron categorías.
                                         </TableCell>
-                                        <TableCell className="text-left text-xs text-muted-foreground">
-                                            {cat.descripcion || '-'}
-                                        </TableCell>
-                                        <TableCell className="text-right">
-                                            <div className="flex justify-end gap-1">
-                                                {isTrashedView ? (
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="h-8 w-8 text-green-600"
-                                                        onClick={() =>
-                                                            router.post(
-                                                                `/categorias/${cat.id}/restore`,
-                                                            )
-                                                        }
-                                                    >
-                                                        <RotateCcw className="h-4 w-4" />
-                                                    </Button>
-                                                ) : (
-                                                    <>
+                                    </TableRow>
+                                ) : (
+                                    categories.data.map((cat: any) => (
+                                        <TableRow key={cat.id}>
+                                            <TableCell className="font-semibold">
+                                                <div className="flex items-center gap-2 text-left">
+                                                    <Tag
+                                                        size={14}
+                                                        className="text-primary/60"
+                                                    />
+                                                    {cat.nombre}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="text-left text-xs text-muted-foreground">
+                                                {cat.descripcion || '-'}
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                <div className="flex justify-end gap-1">
+                                                    {isTrashedView ? (
                                                         <Button
                                                             variant="ghost"
                                                             size="icon"
-                                                            className="h-8 w-8 text-blue-500"
-                                                            onClick={() => {
-                                                                setIsEditing(
-                                                                    cat.id,
-                                                                );
-                                                                setData({
-                                                                    nombre: cat.nombre,
-                                                                    descripcion:
-                                                                        cat.descripcion ||
-                                                                        '',
-                                                                });
-                                                            }}
-                                                        >
-                                                            <Pencil className="h-4 w-4" />
-                                                        </Button>
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className="h-8 w-8 text-destructive"
+                                                            className="h-8 w-8 text-green-600"
                                                             onClick={() =>
-                                                                router.delete(
-                                                                    `/categorias/${cat.id}`,
+                                                                router.post(
+                                                                    `/categorias/${cat.id}/restore`,
                                                                 )
                                                             }
                                                         >
-                                                            <Trash2 className="h-4 w-4" />
+                                                            <RotateCcw className="h-4 w-4" />
                                                         </Button>
-                                                    </>
-                                                )}
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
+                                                    ) : (
+                                                        <>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="h-8 w-8 text-blue-500"
+                                                                onClick={() => {
+                                                                    setIsEditing(
+                                                                        cat.id,
+                                                                    );
+                                                                    setData({
+                                                                        nombre: cat.nombre,
+                                                                        descripcion:
+                                                                            cat.descripcion ||
+                                                                            '',
+                                                                    });
+                                                                }}
+                                                            >
+                                                                <Pencil className="h-4 w-4" />
+                                                            </Button>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="h-8 w-8 text-destructive"
+                                                                onClick={() =>
+                                                                    router.delete(
+                                                                        `/categorias/${cat.id}`,
+                                                                    )
+                                                                }
+                                                            >
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
                             </TableBody>
                         </Table>
+
+                        {/* PAGINACIÓN */}
+                        <div className="flex items-center justify-between border-t bg-muted/20 px-4 py-3">
+                            <div className="text-xs text-muted-foreground">
+                                Mostrando{' '}
+                                <span className="font-medium">
+                                    {categories.from || 0}
+                                </span>{' '}
+                                a{' '}
+                                <span className="font-medium">
+                                    {categories.to || 0}
+                                </span>{' '}
+                                de{' '}
+                                <span className="font-medium">
+                                    {categories.total}
+                                </span>
+                            </div>
+                            <div className="flex gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-8 px-2"
+                                    disabled={!categories.prev_page_url}
+                                    onClick={() =>
+                                        router.get(
+                                            categories.prev_page_url,
+                                            {
+                                                search,
+                                                trashed: filters.trashed,
+                                            },
+                                            { preserveState: true },
+                                        )
+                                    }
+                                >
+                                    <ChevronLeft className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-8 px-2"
+                                    disabled={!categories.next_page_url}
+                                    onClick={() =>
+                                        router.get(
+                                            categories.next_page_url,
+                                            {
+                                                search,
+                                                trashed: filters.trashed,
+                                            },
+                                            { preserveState: true },
+                                        )
+                                    }
+                                >
+                                    <ChevronRight className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
