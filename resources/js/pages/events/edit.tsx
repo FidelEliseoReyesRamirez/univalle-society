@@ -176,10 +176,10 @@ export default function Edit({ event, categories }: any) {
                         {/* Estilo Visual */}
                         <div className="space-y-2">
                             <label className="flex items-center gap-2 text-[11px] font-bold tracking-widest text-primary uppercase">
-                                <Layout size={14} /> Estilo Visual
+                                <Layout size={14} /> Estilo de visualización
                             </label>
                             <select
-                                className="h-12 w-full rounded-md border border-input bg-background px-4 focus:ring-2 focus:ring-primary/20 focus:outline-none"
+                                className="h-12 w-full rounded-md border border-input bg-background px-4 py-2 text-foreground focus:ring-2 focus:ring-primary/20 focus:outline-none"
                                 value={data.nombre_plantilla}
                                 onChange={(e) =>
                                     setData('nombre_plantilla', e.target.value)
@@ -188,11 +188,17 @@ export default function Edit({ event, categories }: any) {
                                 <option value="PostFacebook">
                                     Post estándar (Redes)
                                 </option>
-                                <option value="EventoCard">
-                                    Tarjeta académica
+                                <option value="TicketStyle">
+                                    Estilo Entrada/Ticket (Rojo)
                                 </option>
-                                <option value="NoticiaFull">
-                                    Noticia completa
+                                <option value="GlassOverlay">
+                                    Imagen de Fondo (Cristal)
+                                </option>
+                                <option value="Minimalist">
+                                    Minimalista (Tipografía)
+                                </option>
+                                <option value="BentoBox">
+                                    Bento Box (Bloques)
                                 </option>
                             </select>
                         </div>

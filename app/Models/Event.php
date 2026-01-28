@@ -13,15 +13,13 @@ class Event extends Model
         'slug',
         'extracto',
         'contenido',
-        'imagen_ruta',
-        'nombre_plantilla',
+        'category_id',
         'fecha_evento',
         'ubicacion',
-        'user_id',
-        'category_id',
+        'nombre_plantilla',
+        'imagen_ruta',
+        'esta_eliminado',
         'esta_publicado',
-        'es_destacado',
-        'esta_eliminado'
     ];
 
     protected $casts = [

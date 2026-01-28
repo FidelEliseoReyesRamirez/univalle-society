@@ -173,11 +173,17 @@ export default function Create({ categories }: { categories: any[] }) {
                                 <option value="PostFacebook">
                                     Post estándar (Redes)
                                 </option>
-                                <option value="EventoCard">
-                                    Tarjeta de evento (Académico)
+                                <option value="TicketStyle">
+                                    Estilo Entrada/Ticket (Rojo)
                                 </option>
-                                <option value="NoticiaFull">
-                                    Noticia de ancho completo
+                                <option value="GlassOverlay">
+                                    Imagen de Fondo (Cristal)
+                                </option>
+                                <option value="Minimalist">
+                                    Minimalista (Tipografía)
+                                </option>
+                                <option value="BentoBox">
+                                    Bento Box (Bloques)
                                 </option>
                             </select>
                         </div>

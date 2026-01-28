@@ -8,14 +8,10 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Log;
 use Vinkla\Hashids\Facades\Hashids;
 
 class EventController extends Controller
 {
-    /**
-     * Helper privado para decodificar IDs consistentemente
-     */
     private function getRealId($hashedId)
     {
         $decoded = Hashids::decode($hashedId);
@@ -49,10 +45,9 @@ class EventController extends Controller
         ]);
     }
 
-    public function edit($id) // Cambiado: Recibimos el ID string
+    public function edit($id)
     {
-        $realId = $this->getRealId($id);
-        $evento = Event::findOrFail($realId);
+        $evento = Event::findOrFail($this->getRealId($id));
 
         return Inertia::render('events/edit', [
             'event' => $evento,
@@ -64,11 +59,8 @@ class EventController extends Controller
 
     public function update(Request $request, $id)
     {
-        Log::info('Iniciando actualización', ['id' => $id]);
-
         try {
-            $realId = $this->getRealId($id);
-            $evento = Event::findOrFail($realId);
+            $evento = Event::findOrFail($this->getRealId($id));
 
             $validated = $request->validate([
                 'titulo' => 'required|string|max:255',
@@ -82,43 +74,33 @@ class EventController extends Controller
             ]);
 
             if ($request->hasFile('imagen')) {
-                // Eliminar imagen anterior si existe
                 if ($evento->imagen_ruta) {
-                    $oldPath = str_replace('/storage/', '', $evento->imagen_ruta);
-                    Storage::disk('public')->delete($oldPath);
+                    Storage::disk('public')->delete(str_replace('/storage/', '', $evento->imagen_ruta));
                 }
-
                 $path = $request->file('imagen')->store('events', 'public');
                 $validated['imagen_ruta'] = '/storage/' . $path;
             }
 
             $validated['slug'] = Str::slug($request->titulo);
 
-            // Actualizamos solo los campos necesarios
+            // Asegúrate de que 'nombre_plantilla' esté en el $fillable del modelo Event
             $evento->update(collect($validated)->except(['imagen'])->toArray());
 
-            return redirect()->to('/eventos')->with('success', 'Evento actualizado');
+            return redirect()->to('/eventos');
         } catch (\Exception $e) {
-            Log::error('Error en Update Evento: ' . $e->getMessage());
-            return back()->withErrors(['error' => 'No se pudo actualizar el evento.']);
+            return back()->withErrors(['error' => 'Error al actualizar: ' . $e->getMessage()]);
         }
     }
 
-    public function destroy($id) // Cambiado a ID string
+    public function destroy($id)
     {
-        $realId = $this->getRealId($id);
-        $evento = Event::findOrFail($realId);
-        $evento->update(['esta_eliminado' => true]);
-
+        Event::findOrFail($this->getRealId($id))->update(['esta_eliminado' => true]);
         return redirect()->route('eventos.index');
     }
 
-    public function restore($id) // Cambiado a ID string
+    public function restore($id)
     {
-        $realId = $this->getRealId($id);
-        $evento = Event::findOrFail($realId);
-        $evento->update(['esta_eliminado' => false]);
-
+        Event::findOrFail($this->getRealId($id))->update(['esta_eliminado' => false]);
         return redirect()->route('eventos.index', ['trashed' => 'true']);
     }
 }

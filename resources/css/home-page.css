@@ -1,61 +1,37 @@
+/* resources/css/home-page.css */
+
 /* Hero section */
 .hero-section {
     background-color: rgba(0, 0, 0, 0.5);
     background-blend-mode: darken;
     background-image: url('../images/hero.jpg');
     background-size: cover;
-    height: 80vh; /* para que sea resposivo se suele colocar en vh en vez de px */
+    height: 80vh;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .title {
-    font-size: 6rem;
+    /* Quitamos el font-size de aquí para usar el de Tailwind en el componente */
     font-weight: 600;
     color: #f1f1f1;
     letter-spacing: 0.03em;
 }
 
 .title-sub {
-    font-size: 1.8rem;
     font-weight: 600;
     color: #f1f1f1;
     letter-spacing: 0.03em;
 }
 
-/* Events section */
-.heading1{
-    font-size: 3rem;
-    font-weight: 700;
+/* About section - LIMPIO DE COLORES */
+.about-section {
+    /* Eliminamos background-color: #6e5354; para que mande Tailwind */
+    padding-left: 10%;
+    padding-right: 10%;
 }
 
 .headingBig {
-    font-size: 7rem;
     font-weight: 700;
-}
-
-@media (max-width: 1024px) {
-    .headingBig {
-        font-size: 5rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .headingBig {
-        font-size: 3rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .headingBig {
-        font-size: 2rem;
-    }
-}
-
-/* About section */
-.about-section {
-    background-color: #f02a34;
-    padding-left:10%;
-    padding-right:10%;
 }
