@@ -9,63 +9,73 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 
-// --- RUTAS PÚBLICAS ---
 Route::get('/', function () {
     return Inertia::render('welcome', [
         'canRegister' => Features::enabled(Features::registration()),
         'recentEvents' => Event::with(['category'])
             ->where('esta_publicado', true)
             ->where('esta_eliminado', false)
-            ->latest()
-            ->take(3)
-            ->get(),
+            ->latest()->take(3)->get(),
     ]);
 })->name('home');
 
-// --- RUTAS PROTEGIDAS (Requieren Login) ---
 Route::middleware(['auth', 'verified'])->group(function () {
-
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
 
-    // --- GRUPO PARA ADMIN Y GESTORES (Contenido) ---
     Route::middleware(['role:admin,gestor'])->group(function () {
 
-        // Gestión de Eventos
-        Route::get('/eventos', [EventController::class, 'index'])->name('eventos.index');
-        Route::get('/eventos/crear', [EventController::class, 'create'])->name('eventos.create');
-        Route::post('/eventos', [EventController::class, 'store'])->name('eventos.store');
+        // --- EVENTOS ---
+        Route::prefix('eventos')->name('eventos.')->group(function () {
+            Route::get('/', [EventController::class, 'index'])->name('index');
+            Route::get('/crear', [EventController::class, 'create'])->name('create');
+            Route::post('/', [EventController::class, 'store'])->name('store');
+            Route::get('/{evento}/edit', [EventController::class, 'edit'])->name('edit');
 
-        // Gestión de Proyectos
-        Route::get('/proyectos', [ProjectController::class, 'index'])->name('proyectos.index');
-        Route::get('/proyectos/crear', [ProjectController::class, 'create'])->name('proyectos.create');
-        Route::post('/proyectos', [ProjectController::class, 'store'])->name('proyectos.store');
+            // Usamos POST para el update para soportar multipart/form-data (imágenes)
+            Route::post('/{id}', [EventController::class, 'update'])->name('update');
 
-        // Gestión de Categorías
-        Route::get('/categorias', [CategoryController::class, 'index'])->name('categories.index');
-        Route::post('/categorias', [CategoryController::class, 'store'])->name('categories.store');
-        Route::patch('/categorias/{category}', [CategoryController::class, 'update'])->name('categories.update');
-        Route::delete('/categorias/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
-        Route::post('/categorias/{id}/restore', [CategoryController::class, 'restore'])->name('categories.restore');
+            Route::delete('/{evento}', [EventController::class, 'destroy'])->name('destroy');
+            Route::patch('/{evento}/restaurar', [EventController::class, 'restore'])->name('restore');
+        });
+
+        // --- PROYECTOS ---
+        Route::prefix('proyectos')->name('proyectos.')->group(function () {
+            Route::get('/', [ProjectController::class, 'index'])->name('index');
+            Route::get('/crear', [ProjectController::class, 'create'])->name('create');
+            Route::post('/', [ProjectController::class, 'store'])->name('store');
+            Route::get('/{proyecto}/editar', [ProjectController::class, 'edit'])->name('edit');
+            Route::post('/{proyecto}', [ProjectController::class, 'update'])->name('update');
+            Route::delete('/{proyecto}', [ProjectController::class, 'destroy'])->name('destroy');
+            Route::patch('/{proyecto}/restaurar', [ProjectController::class, 'restore'])->name('restore');
+        });
+
+        // --- CATEGORÍAS ---
+        Route::prefix('categorias')->name('categories.')->group(function () {
+            Route::get('/', [CategoryController::class, 'index'])->name('index');
+            Route::post('/', [CategoryController::class, 'store'])->name('store');
+            Route::patch('/{category}', [CategoryController::class, 'update'])->name('update');
+            Route::delete('/{category}', [CategoryController::class, 'destroy'])->name('destroy');
+            Route::post('/{id}/restore', [CategoryController::class, 'restore'])->name('restore');
+        });
     });
 
-    // --- GRUPO EXCLUSIVO PARA ADMINISTRADORES (Usuarios) ---
     Route::middleware(['role:admin'])->group(function () {
-        Route::get('/usuarios', [UserController::class, 'index'])->name('users.index');
-        Route::post('/usuarios', [UserController::class, 'store'])->name('users.store');
-        Route::patch('/usuarios/{user}', [UserController::class, 'update'])->name('users.update');
-        Route::delete('/usuarios/{user}', [UserController::class, 'destroy'])->name('users.destroy');
-
-        // Acciones de Usuario
-        Route::post('/usuarios/{user}/block', [UserController::class, 'block'])->name('users.block');
-        Route::post('/usuarios/{user}/unlock', [UserController::class, 'unlock'])->name('users.unlock');
-        Route::patch('/usuarios/{user}/role', [UserController::class, 'updateRole'])->name('users.role');
-
-        // Papelera de Usuarios
-        Route::get('/usuarios/papelera', [UserController::class, 'trashed'])->name('users.trashed');
-        Route::post('/usuarios/{user}/restore', [UserController::class, 'restore'])->name('users.restore');
+        Route::prefix('usuarios')->name('users.')->group(function () {
+            Route::get('/', [UserController::class, 'index'])->name('index');
+            Route::post('/', [UserController::class, 'store'])->name('store');
+            Route::patch('/{user}', [UserController::class, 'update'])->name('update');
+            Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
+            Route::post('/{user}/block', [UserController::class, 'block'])->name('block');
+            Route::post('/{user}/unlock', [UserController::class, 'unlock'])->name('unlock');
+            Route::patch('/{user}/role', [UserController::class, 'updateRole'])->name('role');
+            Route::get('/papelera', [UserController::class, 'trashed'])->name('trashed');
+            Route::post('/{user}/restore', [UserController::class, 'restore'])->name('restore');
+        });
     });
 });
 
-require __DIR__ . '/settings.php';
+if (file_exists(__DIR__ . '/settings.php')) {
+    require __DIR__ . '/settings.php';
+}

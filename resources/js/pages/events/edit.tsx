@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/popover';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
 import {
     ArrowLeft,
     Calendar,
@@ -25,46 +25,63 @@ import {
     MapPin,
     Save,
 } from 'lucide-react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
-export default function Create({ categories }: { categories: any[] }) {
+export default function Edit({ event, categories }: any) {
     const [open, setOpen] = useState(false);
 
-    const { data, setData, post, processing, errors } = useForm({
-        titulo: '',
-        extracto: '',
-        contenido: '',
-        category_id: '',
-        fecha_evento: '',
-        ubicacion: '',
-        nombre_plantilla: 'PostFacebook',
+    const { data, setData, processing, errors } = useForm({
+        titulo: event.titulo || '',
+        extracto: event.extracto || '',
+        contenido: event.contenido || '',
+        category_id: event.category_id?.toString() || '',
+        fecha_evento: event.fecha_evento ? event.fecha_evento.slice(0, 16) : '',
+        ubicacion: event.ubicacion || '',
+        nombre_plantilla: event.nombre_plantilla || 'PostFacebook',
         imagen: null as any,
     });
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        post('/eventos');
+
+        // Enviamos a la ruta definida en web.php: Route::post('/eventos/{id}', ...)
+        router.post(
+            `/eventos/${event.id}`,
+            {
+                ...data,
+            },
+            {
+                forceFormData: true,
+                preserveScroll: true,
+                onSuccess: () => {
+                    console.log('Evento actualizado con éxito');
+                },
+                onError: (err: any) => {
+                    // Corregido el error de tipo implícito 'any'
+                    console.error('Error en servidor:', err);
+                },
+            },
+        );
     };
 
     return (
         <AppLayout
             breadcrumbs={[
                 { title: 'Eventos', href: '/eventos' },
-                { title: 'Nuevo', href: '/eventos/crear' },
+                { title: 'Editar', href: '#' },
             ]}
         >
-            <Head title="Nuevo Evento" />
+            <Head title="Editar Evento" />
             <div className="mx-auto w-full max-w-5xl p-4 text-left md:p-8">
-                {/* Cabecera */}
                 <div className="mb-6 flex items-center justify-between">
                     <Link
                         href="/eventos"
-                        className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+                        className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-primary"
                     >
                         <ArrowLeft size={16} /> Volver al listado
                     </Link>
-                    <h1 className="text-2xl font-bold tracking-tight text-foreground">
-                        Registrar nuevo evento
+                    <h1 className="text-2xl font-bold tracking-tight text-primary uppercase">
+                        Editar publicación
                     </h1>
                 </div>
 
@@ -76,25 +93,24 @@ export default function Create({ categories }: { categories: any[] }) {
                         {/* Título */}
                         <div className="space-y-2 md:col-span-2">
                             <label className="text-[11px] font-bold tracking-widest text-muted-foreground uppercase">
-                                Título del evento o noticia
+                                Título
                             </label>
                             <input
                                 type="text"
-                                className="w-full rounded-md border border-input bg-background px-4 py-3 text-foreground transition-all focus:ring-2 focus:ring-primary/20 focus:outline-none"
-                                placeholder="Ej: Simposio Internacional de Ingeniería"
+                                className="w-full rounded-md border border-input bg-background px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:outline-none"
                                 value={data.titulo}
                                 onChange={(e) =>
                                     setData('titulo', e.target.value)
                                 }
                             />
                             {errors.titulo && (
-                                <p className="mt-1 text-xs text-destructive">
+                                <p className="text-xs text-destructive">
                                     {errors.titulo}
                                 </p>
                             )}
                         </div>
 
-                        {/* Combobox de Categorías */}
+                        {/* Categoría */}
                         <div className="flex flex-col space-y-2">
                             <label className="text-[11px] font-bold tracking-widest text-muted-foreground uppercase">
                                 Categoría
@@ -108,12 +124,12 @@ export default function Create({ categories }: { categories: any[] }) {
                                     >
                                         {data.category_id
                                             ? categories.find(
-                                                  (c) =>
+                                                  (c: any) =>
                                                       c.id.toString() ===
                                                       data.category_id,
                                               )?.nombre
                                             : 'Seleccionar categoría...'}
-                                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                        <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
                                     </Button>
                                 </PopoverTrigger>
                                 <PopoverContent
@@ -122,15 +138,14 @@ export default function Create({ categories }: { categories: any[] }) {
                                 >
                                     <Command>
                                         <CommandInput placeholder="Buscar categoría..." />
-                                        <CommandList className="max-h-[250px]">
+                                        <CommandList>
                                             <CommandEmpty>
-                                                No se encontró la categoría.
+                                                No encontrada.
                                             </CommandEmpty>
                                             <CommandGroup>
-                                                {categories.map((c) => (
+                                                {categories.map((c: any) => (
                                                     <CommandItem
                                                         key={c.id}
-                                                        value={c.nombre}
                                                         onSelect={() => {
                                                             setData(
                                                                 'category_id',
@@ -158,13 +173,13 @@ export default function Create({ categories }: { categories: any[] }) {
                             </Popover>
                         </div>
 
-                        {/* Plantilla Visual */}
+                        {/* Estilo Visual */}
                         <div className="space-y-2">
                             <label className="flex items-center gap-2 text-[11px] font-bold tracking-widest text-primary uppercase">
-                                <Layout size={14} /> Estilo de visualización
+                                <Layout size={14} /> Estilo Visual
                             </label>
                             <select
-                                className="h-12 w-full rounded-md border border-input bg-background px-4 py-2 text-foreground focus:ring-2 focus:ring-primary/20 focus:outline-none"
+                                className="h-12 w-full rounded-md border border-input bg-background px-4 focus:ring-2 focus:ring-primary/20 focus:outline-none"
                                 value={data.nombre_plantilla}
                                 onChange={(e) =>
                                     setData('nombre_plantilla', e.target.value)
@@ -174,10 +189,10 @@ export default function Create({ categories }: { categories: any[] }) {
                                     Post estándar (Redes)
                                 </option>
                                 <option value="EventoCard">
-                                    Tarjeta de evento (Académico)
+                                    Tarjeta académica
                                 </option>
                                 <option value="NoticiaFull">
-                                    Noticia de ancho completo
+                                    Noticia completa
                                 </option>
                             </select>
                         </div>
@@ -189,7 +204,7 @@ export default function Create({ categories }: { categories: any[] }) {
                             </label>
                             <input
                                 type="datetime-local"
-                                className="h-12 w-full rounded-md border border-input bg-background px-4 py-2 text-foreground focus:ring-2 focus:ring-primary/20 focus:outline-none"
+                                className="h-12 w-full rounded-md border border-input bg-background px-4 focus:ring-2 focus:ring-primary/20 focus:outline-none"
                                 value={data.fecha_evento}
                                 onChange={(e) =>
                                     setData('fecha_evento', e.target.value)
@@ -200,12 +215,11 @@ export default function Create({ categories }: { categories: any[] }) {
                         {/* Ubicación */}
                         <div className="space-y-2">
                             <label className="flex items-center gap-2 text-[11px] font-bold tracking-widest text-muted-foreground uppercase">
-                                <MapPin size={14} /> Ubicación o Enlace
+                                <MapPin size={14} /> Ubicación
                             </label>
                             <input
                                 type="text"
-                                className="h-12 w-full rounded-md border border-input bg-background px-4 py-3 text-foreground transition-all focus:ring-2 focus:ring-primary/20 focus:outline-none"
-                                placeholder="Ej: Auditorio Central o Link de Zoom"
+                                className="h-12 w-full rounded-md border border-input bg-background px-4 focus:ring-2 focus:ring-primary/20 focus:outline-none"
                                 value={data.ubicacion}
                                 onChange={(e) =>
                                     setData('ubicacion', e.target.value)
@@ -213,15 +227,14 @@ export default function Create({ categories }: { categories: any[] }) {
                             />
                         </div>
 
-                        {/* Resumen */}
+                        {/* Extracto */}
                         <div className="space-y-2 md:col-span-2">
                             <label className="text-[11px] font-bold tracking-widest text-muted-foreground uppercase">
-                                Resumen corto (Extracto)
+                                Extracto
                             </label>
                             <textarea
-                                className="w-full rounded-md border border-input bg-background px-4 py-3 text-foreground transition-all focus:ring-2 focus:ring-primary/20 focus:outline-none"
+                                className="w-full rounded-md border border-input bg-background px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:outline-none"
                                 rows={2}
-                                placeholder="Breve descripción para la vista previa..."
                                 value={data.extracto}
                                 onChange={(e) =>
                                     setData('extracto', e.target.value)
@@ -232,12 +245,11 @@ export default function Create({ categories }: { categories: any[] }) {
                         {/* Contenido */}
                         <div className="space-y-2 md:col-span-2">
                             <label className="text-[11px] font-bold tracking-widest text-muted-foreground uppercase">
-                                Cuerpo de la publicación
+                                Contenido
                             </label>
                             <textarea
-                                className="w-full rounded-md border border-input bg-background px-4 py-3 text-foreground transition-all focus:ring-2 focus:ring-primary/20 focus:outline-none"
+                                className="w-full rounded-md border border-input bg-background px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:outline-none"
                                 rows={8}
-                                placeholder="Escribe todo el detalle de la noticia aquí..."
                                 value={data.contenido}
                                 onChange={(e) =>
                                     setData('contenido', e.target.value)
@@ -245,20 +257,23 @@ export default function Create({ categories }: { categories: any[] }) {
                             />
                         </div>
 
-                        {/* Dropzone Imagen */}
+                        {/* Imagen Dropzone */}
                         <div className="md:col-span-2">
-                            <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-muted-foreground/20 bg-muted/5 py-10 transition-colors hover:border-primary/40 hover:bg-muted/10">
+                            <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed bg-muted/5 py-10 transition-colors hover:border-primary/40">
+                                {event.imagen_ruta && !data.imagen && (
+                                    <img
+                                        src={event.imagen_ruta}
+                                        className="mb-4 h-32 w-48 rounded-lg object-cover shadow-sm"
+                                        alt="Actual"
+                                    />
+                                )}
                                 <ImageIcon
                                     size={40}
                                     className="mb-3 text-muted-foreground/40"
                                 />
                                 <label className="cursor-pointer text-center">
-                                    <span className="mb-1 block text-sm font-semibold text-primary hover:underline">
-                                        Haz clic para subir imagen de portada
-                                    </span>
-                                    <span className="text-xs text-muted-foreground">
-                                        Formatos soportados: JPG, PNG, WEBP
-                                        (Máx. 2MB)
+                                    <span className="text-sm font-semibold text-primary hover:underline">
+                                        Cambiar imagen de portada
                                     </span>
                                     <input
                                         type="file"
@@ -269,24 +284,22 @@ export default function Create({ categories }: { categories: any[] }) {
                                     />
                                 </label>
                                 {data.imagen && (
-                                    <div className="mt-4 rounded-full border border-primary/20 bg-primary/10 px-4 py-1 text-[10px] font-bold text-primary">
-                                        SELECCIONADO: {data.imagen.name}
-                                    </div>
+                                    <p className="mt-2 text-xs font-bold text-primary italic">
+                                        Seleccionada: {data.imagen.name}
+                                    </p>
                                 )}
                             </div>
                         </div>
                     </div>
 
-                    {/* Botón Guardar */}
-                    <div className="flex justify-end border-t border-border/50 pt-6">
+                    <div className="flex justify-end gap-3 border-t pt-6">
                         <Button
                             type="submit"
                             disabled={processing}
                             size="lg"
                             className="h-12 w-full px-12 text-lg font-bold tracking-widest uppercase shadow-lg shadow-primary/20 transition-all active:scale-95 sm:w-auto"
                         >
-                            <Save className="mr-2 h-5 w-5" /> Guardar
-                            publicación
+                            <Save className="mr-2 h-5 w-5" /> Guardar cambios
                         </Button>
                     </div>
                 </form>
