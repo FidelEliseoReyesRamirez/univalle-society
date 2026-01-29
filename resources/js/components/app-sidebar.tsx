@@ -26,22 +26,22 @@ import AppLogo from './app-logo';
 export function AppSidebar() {
     const { auth } = usePage().props as any;
 
+    // Iniciamos solo con el link al sitio web, que es público para todos
     const mainNavItems: NavItem[] = [
-        // OPCIÓN PARA VOLVER AL INICIO (WELCOME)
         {
             title: 'Ver Sitio Web',
             href: '/',
             icon: ExternalLink,
         },
-        {
+    ];
+
+    // Lógica para Admin y Gestor: Aquí movemos el Dashboard
+    if (['admin', 'gestor'].includes(auth?.user?.role)) {
+        mainNavItems.push({
             title: 'Dashboard',
             href: dashboard(),
             icon: LayoutGrid,
-        },
-    ];
-
-    // Acceso para Admin y Gestor
-    if (['admin', 'gestor'].includes(auth?.user?.role)) {
+        });
         mainNavItems.push({
             title: 'Gestión Eventos',
             href: '/eventos',
@@ -74,7 +74,19 @@ export function AppSidebar() {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href={dashboard()} prefetch>
+                            {/* Si el usuario es estudiante, el logo lo lleva al inicio.
+                                Si es admin/gestor, lo lleva al dashboard.
+                            */}
+                            <Link
+                                href={
+                                    ['admin', 'gestor'].includes(
+                                        auth?.user?.role,
+                                    )
+                                        ? dashboard()
+                                        : '/'
+                                }
+                                prefetch
+                            >
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>

@@ -109,9 +109,13 @@ export default function Welcome({
                                             Dashboard
                                         </Link>
                                     ) : (
-                                        <span className="px-4 py-1.5 text-xs font-bold text-red-500 uppercase">
+                                        /* Ajuste para el Estudiante */
+                                        <Link
+                                            href="/settings/profile"
+                                            className="px-4 py-1.5 text-xs font-bold text-red-500 uppercase transition-colors hover:text-white"
+                                        >
                                             Hola, {auth.user.name}
-                                        </span>
+                                        </Link>
                                     )
                                 ) : (
                                     <>

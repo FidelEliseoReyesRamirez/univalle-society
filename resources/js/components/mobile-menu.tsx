@@ -25,6 +25,10 @@ export default function MobileMenu({
 
     if (typeof document === 'undefined') return null;
 
+    // Lógica para determinar si es admin o gestor
+    const isAdminOrGestor =
+        auth?.user?.role === 'admin' || auth?.user?.role === 'gestor';
+
     return (
         <div
             aria-hidden={!isOpen}
@@ -93,13 +97,32 @@ export default function MobileMenu({
 
                 <div className="mt-auto mb-10 border-t border-white/10 pt-6">
                     {auth?.user ? (
-                        <Link
-                            href={dashboard()}
-                            onClick={onClose}
-                            className="block py-4 text-xl font-bold tracking-widest text-[#f02a34] uppercase"
-                        >
-                            DASHBOARD
-                        </Link>
+                        <div className="flex flex-col gap-2">
+                            {/* Link principal dinámico */}
+                            <Link
+                                href={
+                                    isAdminOrGestor
+                                        ? dashboard()
+                                        : '/settings/profile'
+                                }
+                                onClick={onClose}
+                                className="block py-4 text-xl font-bold tracking-widest text-[#f02a34] uppercase"
+                            >
+                                {isAdminOrGestor
+                                    ? 'DASHBOARD'
+                                    : `HOLA, ${auth.user.name}`}
+                            </Link>
+
+                            {/* Botón de Logout usando ruta directa para evitar errores de Ziggy */}
+                            <Link
+                                href="/logout"
+                                method="post"
+                                as="button"
+                                className="block w-full py-2 text-left text-sm font-bold tracking-[0.2em] text-zinc-500 uppercase hover:text-white"
+                            >
+                                CERRAR SESIÓN
+                            </Link>
+                        </div>
                     ) : (
                         <div className="flex flex-col gap-4">
                             <Link

@@ -106,7 +106,7 @@ Route::get('/noticias-all', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
-    })->name('dashboard');
+    })->middleware('role:admin,gestor')->name('dashboard');
 
     Route::middleware(['role:admin,gestor'])->group(function () {
 
