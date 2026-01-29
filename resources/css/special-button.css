@@ -24,7 +24,7 @@
         rgb(240, 42, 52) 40%,
         rgb(243, 135, 33) 100%
     );
-    color: white !important; /* Forzamos blanco */
+    color: black;
     font-weight: 500;
     position: relative;
     overflow: hidden;
@@ -80,8 +80,8 @@
     font-weight: 400;
     padding-top: 1.5em;
     padding-bottom: 1.5em;
-    padding-left: 3em;
-    padding-right: 3em;
+    padding-left: 2.5em;
+    padding-right: 2.5em;
     letter-spacing: 0.05em;
     border: 1px solid #fff;
 
@@ -103,7 +103,6 @@
 /* 13 */
 .btn-13 {
     border: none;
-    background: #0f1923;
     color: #e6e6e6;
     font-weight: 600;
     padding-top: 1.5em;
@@ -127,6 +126,36 @@
 }
 
 .btn-13:hover:after {
+    left: 0;
+    transition: all 0.3s ease;
+}
+
+/* 14 */
+.btn-14 {
+    border: none;
+    color: #e6e6e6;
+    font-weight: 600;
+    padding-top: 1.5em;
+    padding-bottom: 1.5em;
+    padding-left: 3em;
+    padding-right: 3em;
+    letter-spacing: 0.05em;
+
+    transition: all 0.3s ease;
+}
+@media (max-width: 640px) {
+    .btn-14 {
+        padding: 0.05rem;
+    }
+}
+.btn-14:hover {
+    text-decoration: none;
+    color: black;
+    background: #fff;
+    transition: all 0.3s ease;
+}
+
+.btn-14:hover:after {
     left: 0;
     transition: all 0.3s ease;
 }

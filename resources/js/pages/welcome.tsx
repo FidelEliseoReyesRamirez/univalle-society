@@ -61,7 +61,7 @@ export default function Welcome({
 
             <div className="min-h-screen overflow-x-hidden bg-white transition-colors duration-500 dark:bg-[#0a0a0a]">
                 <header className="w-full text-sm">
-                    <nav className="fixed top-0 right-0 left-0 z-50 flex h-16 items-center justify-between gap-4 border-b border-white/10 bg-[#0a0a0a]/95 px-4 backdrop-blur-md">
+                    <nav className="fixed top-0 right-0 left-0 z-50 flex h-20 items-center justify-between gap-4 border-b border-white/10 bg-[#0a0a0a]/95 px-4 backdrop-blur-md">
                         <div className="flex items-center">
                             <Link href="/">
                                 <AppLogoIconHor />
@@ -69,14 +69,14 @@ export default function Welcome({
                             <div className="ml-8 hidden gap-6 md:flex">
                                 <Link
                                     href="#Eventos"
-                                    className="text-xs font-bold text-white uppercase hover:text-[#f02a34]"
+                                    className="text-m font-medium text-white uppercase hover:text-[#f02a34]"
                                 >
                                     Eventos
                                 </Link>
                                 {newsToShow.length > 0 && (
                                     <Link
                                         href="#Noticias"
-                                        className="text-xs font-bold text-white uppercase hover:text-[#f02a34]"
+                                        className="text-m font-medium text-white uppercase hover:text-[#f02a34]"
                                     >
                                         Noticias
                                     </Link>
@@ -84,7 +84,7 @@ export default function Welcome({
                                 {projectsToShow.length > 0 && (
                                     <Link
                                         href="#Proyectos"
-                                        className="text-xs font-bold text-white uppercase hover:text-[#f02a34]"
+                                        className="text-m font-medium text-white uppercase hover:text-[#f02a34]"
                                     >
                                         Proyectos
                                     </Link>
@@ -121,15 +121,14 @@ export default function Welcome({
                                     <>
                                         <Link
                                             href={login()}
-                                            className="px-4 py-1.5 text-xs font-bold text-white uppercase hover:underline"
+                                            className="px-4 py-1.5 text-m font-medium text-white uppercase hover:underline tracking-widest"
                                         >
                                             Ingresar
                                         </Link>
                                         {canRegister && (
                                             <Link
                                                 href={register()}
-                                                id="special-button"
-                                                className="btn-11 rounded px-4 py-1.5 text-xs font-bold text-white uppercase"
+                                                className="btn-11 rounded px-4 py-1.5 text-m font-medium  uppercase tracking-widest"
                                             >
                                                 Regístrate
                                             </Link>
@@ -141,12 +140,12 @@ export default function Welcome({
                     </nav>
                 </header>
 
-                <div className="hero-section flex h-[80vh] w-full flex-col items-center justify-center px-4 py-20 text-center">
+                <div className="hero-section flex h-[85vh] w-full flex-col items-center justify-center px-4 pt-20 text-center">
                     <div className="animate-fade-in">
-                        <h1 className="title font-display text-6xl text-white drop-shadow-lg md:text-8xl">
+                        <h1 className="title font-display text-6xl text-white drop-shadow-lg md:text-8xl mb-4">
                             SICI - ISI
                         </h1>
-                        <p className="title-sub mx-auto mb-10 max-w-3xl text-lg text-white uppercase opacity-90 md:text-xl">
+                        <p className="title-sub font-display mx-auto mb-10 max-w-3xl text-lg text-white uppercase opacity-90 md:text-3xl">
                             SOCIEDAD DE INVESTIGACIÓN, CIENCIA E INNOVACIÓN DE
                             INGENIERÍA EN SISTEMAS INFORMÁTICOS
                         </p>
@@ -156,14 +155,14 @@ export default function Welcome({
                                 isAdminOrGestor ? (
                                     <Link
                                         href={dashboard()}
-                                        className="btn-primary !text-white transition-transform hover:scale-105"
+                                        className="btn-12 btn-primary !text-white transition-transform hover:scale-105"
                                     >
                                         ADMINISTRAR PORTAL
                                     </Link>
                                 ) : (
                                     <a
                                         href="#Eventos"
-                                        className="btn-primary !text-white transition-transform hover:scale-105"
+                                        className="btn-12 btn-primary !text-white transition-transform hover:scale-105"
                                     >
                                         EXPLORAR NOVEDADES
                                     </a>
@@ -171,7 +170,7 @@ export default function Welcome({
                             ) : (
                                 <Link
                                     href={register()}
-                                    className="btn-primary !text-white transition-transform hover:scale-105"
+                                    className="btn-12 btn-primary !text-white transition-transform hover:scale-105"
                                 >
                                     ÚNETE A LA COMUNIDAD
                                 </Link>
@@ -305,11 +304,11 @@ export default function Welcome({
                     <div className="mx-auto flex max-w-7xl flex-col items-center gap-16 px-6 md:flex-row">
                         <img
                             src={aboutImg}
-                            className="animate-soft-float h-auto w-full max-w-md drop-shadow-2xl"
+                            className="animate-soft-float max-w-md"
                             alt="Ilustración SICI"
                         />
                         <div className="w-full text-left md:w-1/2">
-                            <h1 className="text-6xl font-black uppercase md:text-8xl">
+                            <h1 className="font-display text-6xl font-black uppercase md:text-8xl">
                                 ¿QUÉ HACEMOS?
                             </h1>
                             <p className="mt-6 text-xl font-bold uppercase dark:text-red-500">
@@ -321,7 +320,7 @@ export default function Welcome({
                             </p>
                             <a
                                 href="mailto:sici.isi.upto@gmail.com"
-                                className="inline-block bg-zinc-900 px-10 py-4 font-black text-white uppercase transition-all hover:scale-105 active:scale-95 dark:bg-red-600"
+                                className="btn-13 inline-block dark:btn-14 px-10 py-4 font-black text-white uppercase transition-all hover:scale-105 active:scale-95 bg-[#0f1923] dark:bg-red-600" 
                             >
                                 CONTÁCTATE
                             </a>

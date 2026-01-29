@@ -6,7 +6,7 @@
     background-blend-mode: darken;
     background-image: url('../images/hero.jpg');
     background-size: cover;
-    height: 80vh;
+    height: 85vh;
     display: flex;
     align-items: center;
     justify-content: center;
