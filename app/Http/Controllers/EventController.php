@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\Category;
+use App\Helpers\AuditHelper;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
@@ -24,8 +25,6 @@ class EventController extends Controller
         $isTrashedView = $request->query('trashed') === 'true';
 
         $query = Event::with('category')->where('nombre_plantilla', '!=', 'ProjectCard');
-
-        // Filtramos por el estado de eliminación del evento
         $query->where('esta_eliminado', $isTrashedView);
 
         if ($search) {
@@ -92,7 +91,11 @@ class EventController extends Controller
             $validated['slug'] = Str::slug($request->titulo);
             $validated['user_id'] = $request->user()->id;
 
-            Event::create(collect($validated)->except(['imagen'])->toArray());
+            $evento = Event::create(collect($validated)->except(['imagen'])->toArray());
+
+            // --- AUDITORÍA ---
+            AuditHelper::log('crear', 'Evento', $evento->titulo);
+
             return redirect()->to('/eventos')->with('success', 'Evento creado con éxito');
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'Error al guardar: ' . $e->getMessage()]);
@@ -124,6 +127,10 @@ class EventController extends Controller
 
             $validated['slug'] = Str::slug($request->titulo);
             $evento->update(collect($validated)->except(['imagen'])->toArray());
+
+            // --- AUDITORÍA ---
+            AuditHelper::log('editar', 'Evento', $evento->titulo);
+
             return redirect()->to('/eventos');
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'Error al actualizar: ' . $e->getMessage()]);
@@ -132,7 +139,12 @@ class EventController extends Controller
 
     public function destroy($id)
     {
-        Event::findOrFail($this->getRealId($id))->update(['esta_eliminado' => true]);
+        $evento = Event::findOrFail($this->getRealId($id));
+        $evento->update(['esta_eliminado' => true]);
+
+        // --- AUDITORÍA ---
+        AuditHelper::log('eliminar', 'Evento', $evento->titulo);
+
         return redirect()->route('eventos.index');
     }
 
@@ -141,7 +153,6 @@ class EventController extends Controller
         $realId = $this->getRealId($id);
         $evento = Event::with('category')->findOrFail($realId);
 
-        // Bloqueo si la categoría está eliminada
         if ($evento->category && $evento->category->esta_eliminado) {
             return back()->withErrors([
                 'error' => "No se puede restaurar: la categoría '{$evento->category->nombre}' está eliminada. Restáurala primero."
@@ -149,6 +160,10 @@ class EventController extends Controller
         }
 
         $evento->update(['esta_eliminado' => false]);
+
+        // --- AUDITORÍA ---
+        AuditHelper::log('restaurar', 'Evento', $evento->titulo);
+
         return redirect()->route('eventos.index', ['trashed' => 'true']);
     }
 }

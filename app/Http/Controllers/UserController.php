@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Helpers\AuditHelper; // <--- Importamos el motor de auditoría
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -25,6 +26,7 @@ class UserController extends Controller
             'users' => $users,
         ]);
     }
+
     public function trashed()
     {
         $users = User::where('esta_eliminado', true)
@@ -34,7 +36,7 @@ class UserController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'role' => $user->role,
-                'deleted_at' => $user->updated_at, // Fecha de eliminación
+                'deleted_at' => $user->updated_at,
             ]);
 
         return Inertia::render('users/trash', [
@@ -42,11 +44,61 @@ class UserController extends Controller
         ]);
     }
 
-    public function restore(User $user)
+    public function store(Request $request)
     {
-        $user->update(['esta_eliminado' => false]);
-        return back()->with('success', 'Usuario restaurado correctamente.');
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email',
+            'role' => 'required|in:admin,gestor,estudiante',
+        ]);
+
+        $nuevoUsuario = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'role' => $validated['role'],
+            'password' => bcrypt('Univalle2026*'),
+            'esta_bloqueado' => false,
+            'esta_eliminado' => false,
+        ]);
+
+        // AUDITORÍA
+        AuditHelper::log('crear', 'Usuario', $nuevoUsuario->name, "Rol asignado: {$nuevoUsuario->role}");
+
+        return back()->with('success', 'Usuario creado exitosamente.');
     }
+
+    public function update(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+        ]);
+
+        $user->update($validated);
+
+        // AUDITORÍA
+        AuditHelper::log('editar', 'Usuario', $user->name, "Actualización de datos básicos");
+
+        return back()->with('success', 'Usuario actualizado correctamente.');
+    }
+
+    public function updateRole(Request $request, User $user)
+    {
+        $request->validate(['role' => 'required|in:admin,gestor,estudiante']);
+
+        if ($user->role === 'admin' && $request->role !== 'admin' && $this->isLastAdmin($user)) {
+            return back()->with('error', 'El sistema debe tener al menos un administrador.');
+        }
+
+        $antiguoRol = $user->role;
+        $user->update(['role' => $request->role]);
+
+        // AUDITORÍA
+        AuditHelper::log('editar', 'Usuario', $user->name, "Cambio de rol: {$antiguoRol} -> {$user->role}");
+
+        return back()->with('success', 'Rol actualizado correctamente.');
+    }
+
     public function block(User $user)
     {
         if ($this->isLastAdmin($user)) {
@@ -54,6 +106,10 @@ class UserController extends Controller
         }
 
         $user->update(['esta_bloqueado' => true]);
+
+        // AUDITORÍA
+        AuditHelper::log('bloquear', 'Usuario', $user->name);
+
         return back()->with('success', 'Usuario bloqueado.');
     }
 
@@ -64,20 +120,11 @@ class UserController extends Controller
             'intentos_fallidos' => 0,
             'bloqueado_hasta' => null
         ]);
+
+        // AUDITORÍA
+        AuditHelper::log('desbloquear', 'Usuario', $user->name);
+
         return back()->with('success', 'Usuario desbloqueado.');
-    }
-
-    public function updateRole(Request $request, User $user)
-    {
-        $request->validate(['role' => 'required|in:admin,gestor,estudiante']);
-
-        // Si se intenta quitar el rol de admin al último admin
-        if ($user->role === 'admin' && $request->role !== 'admin' && $this->isLastAdmin($user)) {
-            return back()->with('error', 'El sistema debe tener al menos un administrador.');
-        }
-
-        $user->update(['role' => $request->role]);
-        return back()->with('success', 'Rol actualizado correctamente.');
     }
 
     public function destroy(User $user)
@@ -87,12 +134,23 @@ class UserController extends Controller
         }
 
         $user->update(['esta_eliminado' => true]);
+
+        // AUDITORÍA
+        AuditHelper::log('eliminar', 'Usuario', $user->name);
+
         return back()->with('success', 'Usuario enviado a la papelera.');
     }
 
-    /**
-     * Verifica si el usuario es el último administrador activo (no bloqueado ni eliminado).
-     */
+    public function restore(User $user)
+    {
+        $user->update(['esta_eliminado' => false]);
+
+        // AUDITORÍA
+        AuditHelper::log('restaurar', 'Usuario', $user->name);
+
+        return back()->with('success', 'Usuario restaurado correctamente.');
+    }
+
     private function isLastAdmin(User $user)
     {
         if ($user->role !== 'admin') return false;
@@ -103,35 +161,5 @@ class UserController extends Controller
             ->count();
 
         return $adminsCount <= 1;
-    }
-    public function update(Request $request, User $user)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
-        ]);
-
-        $user->update($validated);
-
-        return back()->with('success', 'Usuario actualizado correctamente.');
-    }
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email',
-            'role' => 'required|in:admin,gestor,estudiante',
-        ]);
-
-        User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'role' => $validated['role'],
-            'password' => bcrypt('Univalle2026*'), // Contraseña temporal
-            'esta_bloqueado' => false,
-            'esta_eliminado' => false,
-        ]);
-
-        return back()->with('success', 'Usuario creado exitosamente.');
     }
 }

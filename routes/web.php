@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
-
+use Illuminate\Http\Request;
 /*
 |--------------------------------------------------------------------------
 | Rutas Públicas
@@ -194,6 +194,36 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::middleware(['role:admin'])->group(function () {
+        Route::get('/auditoria', function (Request $request) {
+            $query = DB::table('audits')
+                ->join('users', 'audits.user_id', '=', 'users.id')
+                ->select('audits.*', 'users.name as user_name', 'users.role as user_role');
+
+            // FILTROS
+            if ($request->search) {
+                $query->where('audits.nombre_recurso', 'like', "%{$request->search}%")
+                    ->orWhere('users.name', 'like', "%{$request->search}%");
+            }
+            if ($request->accion && $request->accion !== 'all') {
+                $query->where('audits.accion', $request->accion);
+            }
+            if ($request->tipo && $request->tipo !== 'all') {
+                $query->where('audits.tipo_recurso', $request->tipo);
+            }
+            if ($request->desde) {
+                $query->whereDate('audits.created_at', '>=', $request->desde);
+            }
+            if ($request->hasta) {
+                $query->whereDate('audits.created_at', '<=', $request->hasta);
+            }
+
+            $logs = $query->orderBy('audits.created_at', 'desc')->paginate(15)->withQueryString();
+
+            return Inertia::render('Audit/Index', [
+                'logs' => $logs,
+                'filters' => $request->only(['search', 'accion', 'tipo', 'desde', 'hasta'])
+            ]);
+        })->name('audit.index');
         Route::prefix('usuarios')->name('users.')->group(function () {
             Route::get('/', [UserController::class, 'index'])->name('index');
             Route::post('/', [UserController::class, 'store'])->name('store');

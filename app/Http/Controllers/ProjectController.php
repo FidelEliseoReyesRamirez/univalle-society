@@ -4,11 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\Category;
+use App\Helpers\AuditHelper; // <--- Helper de auditoría importado
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage; // Añadido para gestionar archivos
+use Illuminate\Support\Facades\Storage;
 
 class ProjectController extends Controller
 {
@@ -68,7 +69,7 @@ class ProjectController extends Controller
             'contenido' => 'required|string',
             'category_id' => 'required|exists:categories,id',
             'ubicacion' => 'nullable|string',
-            'imagen' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120', // <--- CORREGIDO A 5MB
+            'imagen' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
 
         if ($request->hasFile('imagen')) {
@@ -81,8 +82,12 @@ class ProjectController extends Controller
         $validated['nombre_plantilla'] = 'ProjectCard';
         $validated['esta_publicado'] = true;
 
-        Event::create($validated);
-        return redirect()->route('proyectos.index');
+        $proyecto = Event::create($validated);
+
+        // --- AUDITORÍA ---
+        AuditHelper::log('crear', 'Proyecto', $proyecto->titulo);
+
+        return redirect()->route('proyectos.index')->with('success', 'Proyecto creado correctamente');
     }
 
     public function update(Request $request, Event $proyecto)
@@ -93,11 +98,10 @@ class ProjectController extends Controller
             'contenido' => 'required|string',
             'category_id' => 'required|exists:categories,id',
             'ubicacion' => 'nullable|string',
-            'imagen' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120', // <--- CORREGIDO A 5MB
+            'imagen' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
 
         if ($request->hasFile('imagen')) {
-            // Opcional: Eliminar la imagen anterior del disco para no acumular basura
             if ($proyecto->imagen_ruta) {
                 $oldPath = str_replace('/storage/', '', $proyecto->imagen_ruta);
                 Storage::disk('public')->delete($oldPath);
@@ -109,18 +113,30 @@ class ProjectController extends Controller
 
         $validated['slug'] = Str::slug($request->titulo);
         $proyecto->update($validated);
+
+        // --- AUDITORÍA ---
+        AuditHelper::log('editar', 'Proyecto', $proyecto->titulo);
+
         return redirect()->route('proyectos.index');
     }
 
     public function restore(Event $proyecto)
     {
         $proyecto->update(['esta_eliminado' => false]);
+
+        // --- AUDITORÍA ---
+        AuditHelper::log('restaurar', 'Proyecto', $proyecto->titulo);
+
         return redirect()->route('proyectos.index', ['trashed' => 'true']);
     }
 
     public function destroy(Event $proyecto)
     {
         $proyecto->update(['esta_eliminado' => true]);
+
+        // --- AUDITORÍA ---
+        AuditHelper::log('eliminar', 'Proyecto', $proyecto->titulo);
+
         return redirect()->route('proyectos.index');
     }
 }

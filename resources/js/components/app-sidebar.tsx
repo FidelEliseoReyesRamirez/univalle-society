@@ -17,6 +17,7 @@ import {
     ExternalLink,
     FolderCode,
     LayoutGrid,
+    ShieldCheck,
     Tags,
     Users,
 } from 'lucide-react';
@@ -26,7 +27,6 @@ import AppLogo from './app-logo';
 export function AppSidebar() {
     const { auth } = usePage().props as any;
 
-    // Iniciamos solo con el link al sitio web, que es público para todos
     const mainNavItems: NavItem[] = [
         {
             title: 'Ver Sitio Web',
@@ -35,7 +35,6 @@ export function AppSidebar() {
         },
     ];
 
-    // Lógica para Admin y Gestor: Aquí movemos el Dashboard
     if (['admin', 'gestor'].includes(auth?.user?.role)) {
         mainNavItems.push({
             title: 'Dashboard',
@@ -59,12 +58,17 @@ export function AppSidebar() {
         });
     }
 
-    // Solo Admin ve usuarios
     if (auth?.user?.role === 'admin') {
         mainNavItems.push({
             title: 'Gestión Usuarios',
             href: '/usuarios',
             icon: Users,
+        });
+        // --- NUEVA PESTAÑA DE AUDITORÍA ---
+        mainNavItems.push({
+            title: 'Auditoría',
+            href: '/auditoria',
+            icon: ShieldCheck,
         });
     }
 
@@ -74,9 +78,6 @@ export function AppSidebar() {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            {/* Si el usuario es estudiante, el logo lo lleva al inicio.
-                                Si es admin/gestor, lo lleva al dashboard.
-                            */}
                             <Link
                                 href={
                                     ['admin', 'gestor'].includes(

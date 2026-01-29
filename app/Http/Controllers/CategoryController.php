@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Helpers\AuditHelper; // <--- El infaltable para el registro
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
@@ -26,7 +27,6 @@ class CategoryController extends Controller
             $query->where('nombre', 'like', "%{$search}%");
         }
 
-        // Cambiamos latest() por orderBy para orden alfabético
         return Inertia::render('categories/index', [
             'categories' => $query->orderBy('nombre', 'asc')
                 ->paginate(10)
@@ -49,9 +49,12 @@ class CategoryController extends Controller
         ]);
 
         $validated['slug'] = Str::slug($request->nombre);
-        $validated['esta_eliminado'] = false; // Por defecto activa
+        $validated['esta_eliminado'] = false;
 
-        Category::create($validated);
+        $category = Category::create($validated);
+
+        // --- AUDITORÍA ---
+        AuditHelper::log('crear', 'Categoría', $category->nombre, "Descripción: " . ($category->descripcion ?? 'Sin descripción'));
 
         return redirect()->back();
     }
@@ -70,15 +73,21 @@ class CategoryController extends Controller
 
         $category->update($validated);
 
+        // --- AUDITORÍA ---
+        AuditHelper::log('editar', 'Categoría', $category->nombre, "Actualización de datos generales");
+
         return redirect()->back();
     }
 
     /**
-     * "Eliminado" lógico: Cambia el booleano a true.
+     * "Eliminado" lógico.
      */
     public function destroy(Category $category)
     {
         $category->update(['esta_eliminado' => true]);
+
+        // --- AUDITORÍA ---
+        AuditHelper::log('eliminar', 'Categoría', $category->nombre);
 
         return redirect()->back();
     }
@@ -90,6 +99,9 @@ class CategoryController extends Controller
     {
         $category = Category::findOrFail($id);
         $category->update(['esta_eliminado' => false]);
+
+        // --- AUDITORÍA ---
+        AuditHelper::log('restaurar', 'Categoría', $category->nombre);
 
         return redirect()->back();
     }
