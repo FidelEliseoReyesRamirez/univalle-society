@@ -168,7 +168,19 @@ const EventContainer: React.FC<{ eventData: any }> = ({ eventData }) => {
                 </ModalPortal>
             )}
 
-            {/* --- PLANTILLAS (TODAS SE MANTIENEN IGUAL) --- */}
+            {/* --- PLANTILLAS --- */}
+
+            {/* NUEVA: Plantilla para el evento más reciente arriba */}
+            {plantilla === 'TriggerOnly' && (
+                <button
+                    onClick={() => setIsInfoModalOpen(true)}
+                    className="flex items-center gap-3 rounded-xl bg-white px-8 py-4 text-xs font-black text-black uppercase shadow-lg transition-all hover:bg-[#f02a34] hover:text-white active:scale-95"
+                >
+                    <Maximize2 size={16} strokeWidth={3} /> Ver detalles del
+                    evento
+                </button>
+            )}
+
             {plantilla === 'ProjectCard' && (
                 <article className="group w-full max-w-[35em] overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg transition-all hover:shadow-2xl dark:border-zinc-800 dark:bg-zinc-950">
                     <div className="relative overflow-hidden">
