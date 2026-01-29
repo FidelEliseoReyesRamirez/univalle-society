@@ -19,6 +19,7 @@ class CategorySeeder extends Seeder
             ['nombre' => 'Talleres y Capacitación', 'descripcion' => 'Cursos cortos y workshops técnicos.'],
             ['nombre' => 'Proyectos de Grado', 'descripcion' => 'Exhibición de defensas y perfiles de tesis.'],
             ['nombre' => 'Competencias y Hackathons', 'descripcion' => 'Retos de programación y concursos tecnológicos.'],
+            ['nombre' => 'Noticias SICI', 'descripcion' => 'Novedades institucionales y avisos importantes de la sociedad.'],
         ];
 
         foreach ($categories as $cat) {

@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Event; // <--- IMPORTANTE
+use App\Observers\EventObserver; // <--- IMPORTANTE
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -24,6 +26,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+
+        // Registrar el Observer para que escuche cuando se crean eventos o noticias
+        Event::observe(EventObserver::class);
     }
 
     protected function configureDefaults(): void
@@ -34,14 +39,15 @@ class AppServiceProvider extends ServiceProvider
             app()->isProduction(),
         );
 
-        Password::defaults(fn (): ?Password => app()->isProduction()
-            ? Password::min(12)
+        Password::defaults(
+            fn(): ?Password => app()->isProduction()
+                ? Password::min(12)
                 ->mixedCase()
                 ->letters()
                 ->numbers()
                 ->symbols()
                 ->uncompromised()
-            : null
+                : null
         );
     }
 }
