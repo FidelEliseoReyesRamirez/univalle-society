@@ -21,27 +21,27 @@ interface WelcomeProps {
     canRegister?: boolean;
     recentEvents?: any[];
     recentProjects?: any[];
-    recentNews?: any[]; // <--- IMPORTANTE: Agregado para recibir lo de Laravel
+    recentNews?: any[];
 }
 
 export default function Welcome({
     canRegister = true,
     recentEvents = [],
     recentProjects = [],
-    recentNews = [], // <--- IMPORTANTE: Recibimos la variable de web.php
+    recentNews = [],
 }: WelcomeProps) {
     const { auth } = usePage<SharedData>().props;
     const [isSideOpen, setIsSideOpen] = useState(false);
 
-    // --- LÓGICA DE ASIGNACIÓN DIRECTA ---
-    // Ya no filtramos aquí porque Laravel ya nos envía los grupos limpios.
-
     const featuredEvent = recentEvents.length > 0 ? recentEvents[0] : null;
     const otherEvents = recentEvents.length > 1 ? recentEvents.slice(1, 4) : [];
 
-    // Usamos directamente lo que viene de la ruta
     const newsToShow = recentNews;
     const projectsToShow = recentProjects;
+
+    // Lógica para determinar el rol y destino del botón principal
+    const isAdminOrGestor =
+        auth.user?.role === 'admin' || auth.user?.role === 'gestor';
 
     return (
         <>
@@ -101,12 +101,18 @@ export default function Welcome({
                             </button>
                             <div className="hidden gap-2 md:flex">
                                 {auth.user ? (
-                                    <Link
-                                        href={dashboard()}
-                                        className="rounded border border-white/30 px-4 py-1.5 text-xs font-bold text-white uppercase hover:bg-white/10"
-                                    >
-                                        Dashboard
-                                    </Link>
+                                    isAdminOrGestor ? (
+                                        <Link
+                                            href={dashboard()}
+                                            className="rounded border border-white/30 px-4 py-1.5 text-xs font-bold text-white uppercase hover:bg-white/10"
+                                        >
+                                            Dashboard
+                                        </Link>
+                                    ) : (
+                                        <span className="px-4 py-1.5 text-xs font-bold text-red-500 uppercase">
+                                            Hola, {auth.user.name}
+                                        </span>
+                                    )
                                 ) : (
                                     <>
                                         <Link
@@ -131,8 +137,8 @@ export default function Welcome({
                     </nav>
                 </header>
 
-                <div className="hero-section flex h-[80vh] w-full flex-col items-center justify-center px-4 py-20">
-                    <div className="animate-fade-in text-center">
+                <div className="hero-section flex h-[80vh] w-full flex-col items-center justify-center px-4 py-20 text-center">
+                    <div className="animate-fade-in">
                         <h1 className="title font-display text-6xl text-white drop-shadow-lg md:text-8xl">
                             SICI - ISI
                         </h1>
@@ -140,12 +146,39 @@ export default function Welcome({
                             SOCIEDAD DE INVESTIGACIÓN, CIENCIA E INNOVACIÓN DE
                             INGENIERÍA EN SISTEMAS INFORMÁTICOS
                         </p>
-                        <Link
-                            href={auth.user ? dashboard() : login()}
-                            className="btn-primary !text-white transition-transform hover:scale-105"
-                        >
-                            {auth.user ? 'IR AL DASHBOARD' : 'EMPEZAR AHORA'}
-                        </Link>
+
+                        <div className="flex flex-col items-center gap-4">
+                            {auth.user ? (
+                                isAdminOrGestor ? (
+                                    <Link
+                                        href={dashboard()}
+                                        className="btn-primary !text-white transition-transform hover:scale-105"
+                                    >
+                                        ADMINISTRAR PORTAL
+                                    </Link>
+                                ) : (
+                                    <a
+                                        href="#Eventos"
+                                        className="btn-primary !text-white transition-transform hover:scale-105"
+                                    >
+                                        EXPLORAR NOVEDADES
+                                    </a>
+                                )
+                            ) : (
+                                <Link
+                                    href={register()}
+                                    className="btn-primary !text-white transition-transform hover:scale-105"
+                                >
+                                    ÚNETE A LA COMUNIDAD
+                                </Link>
+                            )}
+                            {!auth.user && (
+                                <p className="text-[10px] font-bold tracking-widest text-white/50 uppercase">
+                                    Regístrate para recibir notificaciones de
+                                    eventos y noticias
+                                </p>
+                            )}
+                        </div>
                     </div>
                 </div>
 
@@ -282,9 +315,12 @@ export default function Welcome({
                                 Promovemos la investigación y la innovación
                                 tecnológica a través del trabajo colaborativo.
                             </p>
-                            <button className="bg-zinc-900 px-10 py-4 font-black text-white uppercase transition-all hover:scale-105 active:scale-95 dark:bg-red-600">
+                            <a
+                                href="mailto:sici.isi.upto@gmail.com"
+                                className="inline-block bg-zinc-900 px-10 py-4 font-black text-white uppercase transition-all hover:scale-105 active:scale-95 dark:bg-red-600"
+                            >
                                 CONTÁCTATE
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>

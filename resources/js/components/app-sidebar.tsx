@@ -14,6 +14,7 @@ import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import {
     CalendarDays,
+    ExternalLink,
     FolderCode,
     LayoutGrid,
     Tags,
@@ -26,6 +27,12 @@ export function AppSidebar() {
     const { auth } = usePage().props as any;
 
     const mainNavItems: NavItem[] = [
+        // OPCIÓN PARA VOLVER AL INICIO (WELCOME)
+        {
+            title: 'Ver Sitio Web',
+            href: '/',
+            icon: ExternalLink,
+        },
         {
             title: 'Dashboard',
             href: dashboard(),

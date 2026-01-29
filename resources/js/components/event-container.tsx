@@ -27,16 +27,18 @@ const EventContainer: React.FC<{ eventData: any }> = ({ eventData }) => {
     const plantilla = eventData.nombre_plantilla || 'PostFacebook';
     const isProject = plantilla.startsWith('Project');
 
+    // Lógica de fecha corregida: Prioriza fecha_evento, luego created_at
     const fecha = eventData.fecha_evento
         ? new Date(eventData.fecha_evento)
-        : null;
-    const fechaFormateada = fecha
-        ? fecha.toLocaleDateString('es-ES', {
-              day: '2-digit',
-              month: 'long',
-              year: 'numeric',
-          })
-        : 'Próximamente';
+        : eventData.created_at
+          ? new Date(eventData.created_at)
+          : new Date();
+
+    const fechaFormateada = fecha.toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+    });
 
     const imageStyle: React.CSSProperties = {
         backgroundImage: `url(${eventData.imagen_ruta ?? logoPng})`,
@@ -112,14 +114,12 @@ const EventContainer: React.FC<{ eventData: any }> = ({ eventData }) => {
                                                   'SICI Lab'}
                                         </span>
                                     </div>
-                                    {!isProject && (
-                                        <div className="flex items-center gap-2 text-gray-500">
-                                            <Calendar size={18} />
-                                            <span className="text-xs font-semibold">
-                                                {fechaFormateada}
-                                            </span>
-                                        </div>
-                                    )}
+                                    <div className="flex items-center gap-2 text-gray-500">
+                                        <Calendar size={18} />
+                                        <span className="text-xs font-semibold">
+                                            {fechaFormateada}
+                                        </span>
+                                    </div>
                                 </div>
                                 <h2 className="mb-4 text-4xl leading-tight font-black text-gray-900 uppercase italic dark:text-white">
                                     {eventData.titulo}
@@ -170,7 +170,6 @@ const EventContainer: React.FC<{ eventData: any }> = ({ eventData }) => {
 
             {/* --- PLANTILLAS --- */}
 
-            {/* NUEVA: Plantilla para el evento más reciente arriba */}
             {plantilla === 'TriggerOnly' && (
                 <button
                     onClick={() => setIsInfoModalOpen(true)}
@@ -404,6 +403,7 @@ const EventContainer: React.FC<{ eventData: any }> = ({ eventData }) => {
                 </article>
             )}
 
+            {/* --- PLANTILLA: ProjectDetailed CORREGIDA --- */}
             {plantilla === 'ProjectDetailed' && (
                 <article className="group relative w-full max-w-[35em] overflow-hidden rounded-[2.5rem] border-2 border-gray-100 bg-white p-3 shadow-xl transition-all hover:border-[#f02a34]/20 dark:border-zinc-800 dark:bg-zinc-950">
                     <div className="relative h-64 overflow-hidden rounded-[2rem]">
@@ -419,7 +419,7 @@ const EventContainer: React.FC<{ eventData: any }> = ({ eventData }) => {
                         <div className="absolute right-8 bottom-5 left-8 flex items-end justify-between">
                             <div>
                                 <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] text-red-400 uppercase">
-                                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-red-500" />{' '}
+                                    <span className="h-1.5 w-1.5 rounded-full bg-red-500" />{' '}
                                     SICI Innovación
                                 </div>
                                 <h2 className="mt-1 text-2xl font-black text-white uppercase italic">
@@ -429,14 +429,20 @@ const EventContainer: React.FC<{ eventData: any }> = ({ eventData }) => {
                         </div>
                     </div>
                     <div className="px-6 py-6">
-                        <div className="mb-4 flex items-center gap-4">
-                            <div className="flex -space-x-2">
-                                <div className="h-7 w-7 rounded-full border-2 border-white bg-zinc-200 dark:border-zinc-950" />
-                                <div className="h-7 w-7 rounded-full border-2 border-white bg-[#f02a34] dark:border-zinc-950" />
+                        <div className="mb-4 flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-zinc-500 dark:text-zinc-400">
+                                <Calendar
+                                    size={14}
+                                    className="text-[#f02a34]"
+                                />
+                                <span className="text-[10px] font-black tracking-widest uppercase">
+                                    Publicado: {fechaFormateada}
+                                </span>
                             </div>
-                            <span className="text-[10px] font-bold tracking-widest text-gray-400 uppercase">
-                                Activo en Laboratorio
-                            </span>
+                            <div className="flex -space-x-2">
+                                <div className="h-6 w-6 rounded-full border-2 border-white bg-zinc-200 dark:border-zinc-950" />
+                                <div className="h-6 w-6 rounded-full border-2 border-white bg-[#f02a34] dark:border-zinc-950" />
+                            </div>
                         </div>
                         <p className="line-clamp-2 text-sm font-medium text-gray-600 italic dark:text-gray-400">
                             "{eventData.extracto}"

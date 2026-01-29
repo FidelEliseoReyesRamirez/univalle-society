@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
-import { Link } from '@inertiajs/react';
 import { dashboard, login, register } from '@/routes';
+import { Link } from '@inertiajs/react';
+import { useEffect } from 'react';
 
 type Props = {
     isOpen: boolean;
@@ -9,9 +9,13 @@ type Props = {
     canRegister?: boolean;
 };
 
-export default function MobileMenu({ isOpen, onClose, auth, canRegister = true }: Props) {
+export default function MobileMenu({
+    isOpen,
+    onClose,
+    auth,
+    canRegister = true,
+}: Props) {
     useEffect(() => {
-        // lock body scroll while menu is open
         const prev = document.body.style.overflow;
         if (isOpen) document.body.style.overflow = 'hidden';
         return () => {
@@ -39,40 +43,78 @@ export default function MobileMenu({ isOpen, onClose, auth, canRegister = true }
                 role="dialog"
                 aria-modal="true"
                 onClick={(e) => e.stopPropagation()}
-                className={`relative w-full max-w-full h-full flex flex-col p-6 text-white transform transition-transform duration-300 ease-in-out ${
+                className={`relative flex h-full w-full max-w-full transform flex-col p-8 text-white transition-transform duration-300 ease-in-out ${
                     isOpen ? 'translate-y-0' : '-translate-y-full'
                 }`}
             >
-                <div className="flex justify-between items-center">
-                    <div className="text-lg font-semibold">Menu</div>
+                <div className="flex items-center justify-between">
+                    <div className="text-2xl font-black tracking-tighter uppercase italic">
+                        SICI<span className="text-[#f02a34]">.</span>MENU
+                    </div>
                     <button
                         onClick={onClose}
                         aria-label="Close menu"
-                        className="p-2 rounded hover:bg-white/10"
+                        className="p-2 text-3xl leading-none text-white hover:text-[#f02a34]"
                     >
                         ✕
                     </button>
                 </div>
 
-                <nav className="mt-8 flex flex-col gap-8 text-xl">
-                    <Link href="#Noticias" className="block">EVENTOS</Link>
-                    <Link href="#Noticias" className="block">PROMOCIONES</Link>
-                    <Link href="#Noticias" className="block">PROYECTOS</Link>
-                    <Link href="#Noticias" className="block font-bold">CONTÁCTANOS</Link>
+                <nav className="mt-12 flex flex-col gap-10 text-3xl font-black tracking-tight uppercase italic">
+                    <Link
+                        href="/"
+                        onClick={onClose}
+                        className="hover:text-[#f02a34]"
+                    >
+                        INICIO
+                    </Link>
+                    <Link
+                        href="/eventos-all"
+                        onClick={onClose}
+                        className="hover:text-[#f02a34]"
+                    >
+                        EVENTOS
+                    </Link>
+                    <Link
+                        href="/noticias-all"
+                        onClick={onClose}
+                        className="hover:text-[#f02a34]"
+                    >
+                        NOTICIAS
+                    </Link>
+                    <Link
+                        href="/proyectos-all"
+                        onClick={onClose}
+                        className="hover:text-[#f02a34]"
+                    >
+                        PROYECTOS
+                    </Link>
                 </nav>
 
-                <div className="mt-5 pt-6 border-t border-white/10">
+                <div className="mt-auto mb-10 border-t border-white/10 pt-6">
                     {auth?.user ? (
-                        <Link href={dashboard()} className="block py-3">
+                        <Link
+                            href={dashboard()}
+                            onClick={onClose}
+                            className="block py-4 text-xl font-bold tracking-widest text-[#f02a34] uppercase"
+                        >
                             DASHBOARD
                         </Link>
                     ) : (
-                        <div className="flex flex-col gap-3">
-                            <Link href={login()} className="block py-3">
+                        <div className="flex flex-col gap-4">
+                            <Link
+                                href={login()}
+                                onClick={onClose}
+                                className="block py-4 text-xl font-bold tracking-widest uppercase hover:text-[#f02a34]"
+                            >
                                 LOGIN
                             </Link>
                             {canRegister && (
-                                <Link href={register()} className="block py-3">
+                                <Link
+                                    href={register()}
+                                    onClick={onClose}
+                                    className="block py-4 text-xl font-bold tracking-widest uppercase opacity-60 hover:opacity-100"
+                                >
                                     REGISTER
                                 </Link>
                             )}
