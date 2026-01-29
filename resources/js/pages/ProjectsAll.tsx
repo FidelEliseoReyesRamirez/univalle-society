@@ -1,0 +1,27 @@
+import EventContainer from '@/components/event-container';
+import HomeLayout from '@/layouts/HomeLayout';
+import { Head } from '@inertiajs/react';
+
+export default function ProjectsAll({ projects = [] }: { projects: any[] }) {
+    return (
+        <HomeLayout>
+            <Head title="Todos los Proyectos" />
+            <div className="mx-auto max-w-7xl px-6 py-12">
+                <h1 className="mb-12 text-right text-5xl font-black uppercase italic dark:text-white">
+                    Proyectos SICI
+                </h1>
+                <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+                    {projects.map((p) => (
+                        <EventContainer
+                            key={p.id}
+                            eventData={{
+                                ...p,
+                                nombre_plantilla: 'ProjectDetailed',
+                            }}
+                        />
+                    ))}
+                </div>
+            </div>
+        </HomeLayout>
+    );
+}

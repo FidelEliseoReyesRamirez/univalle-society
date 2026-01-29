@@ -1,5 +1,5 @@
 import { Head, Link, usePage } from '@inertiajs/react';
-import { ArrowRight, Info } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { useState } from 'react';
 
 import { dashboard, login, register } from '@/routes';
@@ -21,30 +21,27 @@ interface WelcomeProps {
     canRegister?: boolean;
     recentEvents?: any[];
     recentProjects?: any[];
+    recentNews?: any[]; // <--- IMPORTANTE: Agregado para recibir lo de Laravel
 }
 
 export default function Welcome({
     canRegister = true,
     recentEvents = [],
     recentProjects = [],
+    recentNews = [], // <--- IMPORTANTE: Recibimos la variable de web.php
 }: WelcomeProps) {
     const { auth } = usePage<SharedData>().props;
     const [isSideOpen, setIsSideOpen] = useState(false);
 
-    // --- FILTRADO ESTRICTO ---
-    const checkIsNews = (item: any) => {
-        const catName = item.category?.nombre?.toLowerCase() || '';
-        return catName.includes('noticia') || catName.includes('news');
-    };
+    // --- LÓGICA DE ASIGNACIÓN DIRECTA ---
+    // Ya no filtramos aquí porque Laravel ya nos envía los grupos limpios.
 
-    const allNews = recentEvents?.filter((e) => checkIsNews(e)) || [];
-    const allEventsOnly = recentEvents?.filter((e) => !checkIsNews(e)) || [];
+    const featuredEvent = recentEvents.length > 0 ? recentEvents[0] : null;
+    const otherEvents = recentEvents.length > 1 ? recentEvents.slice(1, 4) : [];
 
-    const featuredEvent = allEventsOnly.length > 0 ? allEventsOnly[0] : null;
-    const otherEvents =
-        allEventsOnly.length > 1 ? allEventsOnly.slice(1, 4) : [];
-    const newsToShow = allNews.slice(0, 3);
-    const projectsToShow = recentProjects?.slice(0, 3) || [];
+    // Usamos directamente lo que viene de la ruta
+    const newsToShow = recentNews;
+    const projectsToShow = recentProjects;
 
     return (
         <>
@@ -66,7 +63,9 @@ export default function Welcome({
                 <header className="w-full text-sm">
                     <nav className="fixed top-0 right-0 left-0 z-50 flex h-16 items-center justify-between gap-4 border-b border-white/10 bg-[#0a0a0a]/95 px-4 backdrop-blur-md">
                         <div className="flex items-center">
-                            <AppLogoIconHor />
+                            <Link href="/">
+                                <AppLogoIconHor />
+                            </Link>
                             <div className="ml-8 hidden gap-6 md:flex">
                                 <Link
                                     href="#Eventos"
@@ -137,7 +136,7 @@ export default function Welcome({
                         <h1 className="title font-display text-6xl text-white drop-shadow-lg md:text-8xl">
                             SICI - ISI
                         </h1>
-                        <p className="title-sub mx-auto mb-10 max-w-3xl text-lg text-white opacity-90 md:text-xl">
+                        <p className="title-sub mx-auto mb-10 max-w-3xl text-lg text-white uppercase opacity-90 md:text-xl">
                             SOCIEDAD DE INVESTIGACIÓN, CIENCIA E INNOVACIÓN DE
                             INGENIERÍA EN SISTEMAS INFORMÁTICOS
                         </p>
@@ -150,7 +149,7 @@ export default function Welcome({
                     </div>
                 </div>
 
-                {/* --- SECCIÓN EVENTOS (Featured siempre, Recientes condicional) --- */}
+                {/* --- SECCIÓN EVENTOS --- */}
                 {(featuredEvent || otherEvents.length > 0) && (
                     <div
                         id="Eventos"
@@ -231,7 +230,7 @@ export default function Welcome({
                     </div>
                 )}
 
-                {/* --- SECCIÓN NOTICIAS (CONDICIONAL) --- */}
+                {/* --- SECCIÓN NOTICIAS --- */}
                 {newsToShow.length > 0 && (
                     <div
                         id="Noticias"
@@ -242,25 +241,16 @@ export default function Welcome({
                                 <h1 className="font-display text-4xl font-black text-zinc-900 uppercase italic dark:text-white">
                                     Noticias
                                 </h1>
-                                <div className="flex gap-4">
-                                    <Link
-                                        href="#"
-                                        className="group flex items-center gap-2 text-[10px] font-black text-zinc-400 uppercase"
-                                    >
-                                        <Info size={12} /> Sección en
-                                        construcción
-                                    </Link>
-                                    <Link
-                                        href="/noticias-all"
-                                        className="group flex items-center gap-2 text-xs font-black text-[#f02a34] uppercase"
-                                    >
-                                        Ver todas las noticias{' '}
-                                        <ArrowRight
-                                            size={14}
-                                            className="transition-transform group-hover:translate-x-1"
-                                        />
-                                    </Link>
-                                </div>
+                                <Link
+                                    href="/noticias-all"
+                                    className="group flex items-center gap-2 text-xs font-black text-[#f02a34] uppercase"
+                                >
+                                    Ver todas las noticias{' '}
+                                    <ArrowRight
+                                        size={14}
+                                        className="transition-transform group-hover:translate-x-1"
+                                    />
+                                </Link>
                             </div>
                             <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3">
                                 {newsToShow.map((n) => (
@@ -273,7 +263,7 @@ export default function Welcome({
                     </div>
                 )}
 
-                {/* --- SECCIÓN ¿QUÉ HACEMOS? (SIN CAMBIOS) --- */}
+                {/* --- SECCIÓN ¿QUÉ HACEMOS? --- */}
                 <div className="flex w-full justify-center bg-[#f02a34] py-24 text-white dark:bg-[#1a0505]">
                     <div className="mx-auto flex max-w-7xl flex-col items-center gap-16 px-6 md:flex-row">
                         <img
@@ -299,7 +289,7 @@ export default function Welcome({
                     </div>
                 </div>
 
-                {/* --- SECCIÓN PROYECTOS (CONDICIONAL) --- */}
+                {/* --- SECCIÓN PROYECTOS --- */}
                 {projectsToShow.length > 0 && (
                     <div
                         id="Proyectos"

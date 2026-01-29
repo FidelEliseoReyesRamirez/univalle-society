@@ -9,27 +9,99 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 
+/*
+|--------------------------------------------------------------------------
+| Rutas Públicas
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/', function () {
     return Inertia::render('welcome', [
         'canRegister' => Features::enabled(Features::registration()),
 
-        // EVENTOS: Solo los que NO son ProjectCard
+        // 1. EVENTOS (Que no sean proyectos ni noticias)
         'recentEvents' => Event::with(['category'])
             ->where('nombre_plantilla', '!=', 'ProjectCard')
             ->where('esta_publicado', true)
             ->where('esta_eliminado', false)
-            ->whereHas('category', fn($q) => $q->where('esta_eliminado', false))
-            ->latest()->take(3)->get(),
+            ->whereHas('category', function ($q) {
+                $q->where('esta_eliminado', false)
+                    ->where('nombre', 'not like', '%noticia%')
+                    ->where('nombre', 'not like', '%news%');
+            })
+            ->latest()->take(4)->get(),
 
-        // PROYECTOS: Solo los que SON ProjectCard
+        // 2. PROYECTOS
         'recentProjects' => Event::with(['category'])
             ->where('nombre_plantilla', 'ProjectCard')
             ->where('esta_publicado', true)
             ->where('esta_eliminado', false)
-            ->whereHas('category', fn($q) => $q->where('esta_eliminado', false))
+            ->latest()->take(3)->get(),
+
+        // 3. NOTICIAS (Filtrado explícito para la sección de noticias)
+        'recentNews' => Event::with(['category'])
+            ->where('esta_publicado', true)
+            ->where('esta_eliminado', false)
+            ->whereHas('category', function ($q) {
+                $q->where('esta_eliminado', false)
+                    ->where(function ($sub) {
+                        $sub->where('nombre', 'like', '%noticia%')
+                            ->orWhere('nombre', 'like', '%news%');
+                    });
+            })
             ->latest()->take(3)->get(),
     ]);
 })->name('home');
+
+// --- PÁGINAS "VER TODO" ---
+
+Route::get('/eventos-all', function () {
+    return Inertia::render('EventsAll', [
+        'events' => Event::with(['category'])
+            ->where('nombre_plantilla', '!=', 'ProjectCard')
+            ->where('esta_publicado', true)
+            ->where('esta_eliminado', false)
+            ->whereHas('category', function ($q) {
+                $q->where('esta_eliminado', false)
+                    ->where('nombre', 'not like', '%noticia%');
+            })
+            ->latest()->get(),
+    ]);
+})->name('public.events');
+
+Route::get('/proyectos-all', function () {
+    return Inertia::render('ProjectsAll', [
+        'projects' => Event::with(['category'])
+            ->where('nombre_plantilla', 'ProjectCard')
+            ->where('esta_publicado', true)
+            ->where('esta_eliminado', false)
+            ->whereHas('category', fn($q) => $q->where('esta_eliminado', false))
+            ->latest()->get(),
+    ]);
+})->name('public.projects');
+
+Route::get('/noticias-all', function () {
+    return Inertia::render('NewsAll', [
+        'news' => Event::with(['category'])
+            ->where('esta_publicado', true)
+            ->where('esta_eliminado', false)
+            ->whereHas('category', function ($q) {
+                $q->where('esta_eliminado', false)
+                    ->where(function ($sub) {
+                        $sub->where('nombre', 'like', '%noticia%')
+                            ->orWhere('nombre', 'like', '%news%');
+                    });
+            })
+            ->latest()->get(),
+    ]);
+})->name('public.news');
+
+
+/*
+|--------------------------------------------------------------------------
+| Rutas Protegidas (Auth)
+|--------------------------------------------------------------------------
+*/
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
@@ -38,21 +110,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::middleware(['role:admin,gestor'])->group(function () {
 
-        // --- EVENTOS ---
+        // --- ADMIN EVENTOS ---
         Route::prefix('eventos')->name('eventos.')->group(function () {
             Route::get('/', [EventController::class, 'index'])->name('index');
             Route::get('/crear', [EventController::class, 'create'])->name('create');
             Route::post('/', [EventController::class, 'store'])->name('store');
             Route::get('/{evento}/edit', [EventController::class, 'edit'])->name('edit');
-
-            // Usamos POST para el update para soportar multipart/form-data (imágenes)
             Route::post('/{id}', [EventController::class, 'update'])->name('update');
-
             Route::delete('/{evento}', [EventController::class, 'destroy'])->name('destroy');
             Route::put('/{id}/restore', [EventController::class, 'restore'])->name('restore');
         });
 
-        // --- PROYECTOS ---
+        // --- ADMIN PROYECTOS ---
         Route::prefix('proyectos')->name('proyectos.')->group(function () {
             Route::get('/', [ProjectController::class, 'index'])->name('index');
             Route::get('/crear', [ProjectController::class, 'create'])->name('create');
@@ -63,7 +132,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::patch('/{proyecto}/restaurar', [ProjectController::class, 'restore'])->name('restore');
         });
 
-        // --- CATEGORÍAS ---
+        // --- ADMIN CATEGORÍAS ---
         Route::prefix('categorias')->name('categories.')->group(function () {
             Route::get('/', [CategoryController::class, 'index'])->name('index');
             Route::post('/', [CategoryController::class, 'store'])->name('store');
@@ -74,6 +143,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::middleware(['role:admin'])->group(function () {
+        // --- ADMIN USUARIOS ---
         Route::prefix('usuarios')->name('users.')->group(function () {
             Route::get('/', [UserController::class, 'index'])->name('index');
             Route::post('/', [UserController::class, 'store'])->name('store');
@@ -82,7 +152,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/{user}/block', [UserController::class, 'block'])->name('block');
             Route::post('/{user}/unlock', [UserController::class, 'unlock'])->name('unlock');
             Route::patch('/{user}/role', [UserController::class, 'updateRole'])->name('role');
-            // Corregido: Trashead suele ser GET para mostrar la vista
             Route::get('/papelera', [UserController::class, 'trashed'])->name('trashed');
             Route::post('/{user}/restore', [UserController::class, 'restore'])->name('restore');
         });
