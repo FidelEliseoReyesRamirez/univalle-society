@@ -4,42 +4,30 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import HomeLayout from '@/layouts/HomeLayout';
 import { Head } from '@inertiajs/react';
-import { FilterX, Newspaper, Search, Tag } from 'lucide-react';
+import {
+    ChevronLeft,
+    ChevronRight,
+    FilterX,
+    Newspaper,
+    Search,
+} from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 export default function NewsAll({ news = [] }: { news: any[] }) {
-    // Estados para los filtros
     const [search, setSearch] = useState('');
-    const [categoryId, setCategoryId] = useState('all');
     const [dateFrom, setDateFrom] = useState('');
     const [dateTo, setDateTo] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
 
-    // 1. Obtener categorías presentes SOLO en las noticias
-    const availableCategories = useMemo(() => {
-        const cats = news.map((n) => n.category).filter((cat) => cat !== null);
+    const itemsPerPage = 9;
 
-        const uniqueCats = Array.from(
-            new Map(cats.map((c) => [c.id, c])).values(),
-        );
-        return uniqueCats.sort((a: any, b: any) =>
-            a.nombre.localeCompare(b.nombre),
-        );
-    }, [news]);
-
-    // 2. Lógica de filtrado
+    // 1. Lógica de filtrado
     const filteredNews = useMemo(() => {
-        return news.filter((item) => {
-            // Filtro por texto
+        const filtered = news.filter((item) => {
             const matchesSearch =
                 item.titulo.toLowerCase().includes(search.toLowerCase()) ||
                 item.extracto?.toLowerCase().includes(search.toLowerCase());
 
-            // Filtro por Categoría
-            const matchesCategory =
-                categoryId === 'all' ||
-                item.category_id?.toString() === categoryId;
-
-            // Filtro por Fechas
             const newsDate = item.fecha_evento
                 ? new Date(item.fecha_evento).getTime()
                 : null;
@@ -54,19 +42,26 @@ export default function NewsAll({ news = [] }: { news: any[] }) {
                 matchesDate = false;
             }
 
-            return matchesSearch && matchesCategory && matchesDate;
+            return matchesSearch && matchesDate;
         });
-    }, [news, search, categoryId, dateFrom, dateTo]);
 
-    const hasFilters =
-        search !== '' ||
-        categoryId !== 'all' ||
-        dateFrom !== '' ||
-        dateTo !== '';
+        // Resetear a página 1 cuando se filtra
+        setCurrentPage(1);
+        return filtered;
+    }, [news, search, dateFrom, dateTo]);
+
+    // 2. Lógica de Paginación
+    const totalPages = Math.ceil(filteredNews.length / itemsPerPage);
+    const paginatedNews = useMemo(() => {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        return filteredNews.slice(startIndex, startIndex + itemsPerPage);
+    }, [filteredNews, currentPage]);
+
+    const hasFilters = search !== '' || dateFrom !== '' || dateTo !== '';
 
     return (
         <HomeLayout>
-            <Head title="Todas las Noticias" />
+            <Head title="Archivo de Noticias" />
 
             <div className="mx-auto max-w-7xl px-6 py-12">
                 <header className="mb-12">
@@ -74,13 +69,13 @@ export default function NewsAll({ news = [] }: { news: any[] }) {
                         Archivo de Noticias
                     </h1>
                     <p className="mt-2 text-sm font-bold text-zinc-500 uppercase">
-                        Mantente al día con las novedades del SICI e ISI
+                        Explora todas las novedades y publicaciones
                     </p>
                 </header>
 
-                {/* Barra de Filtros */}
-                <div className="mb-8 grid grid-cols-1 gap-4 rounded-2xl border border-zinc-200 bg-zinc-50/50 p-6 lg:grid-cols-4 dark:border-zinc-800 dark:bg-zinc-900/50">
-                    <div className="space-y-2">
+                {/* Barra de Filtros Simplificada */}
+                <div className="mb-8 grid grid-cols-1 gap-4 rounded-2xl border border-zinc-200 bg-zinc-50/50 p-6 lg:grid-cols-3 dark:border-zinc-800 dark:bg-zinc-900/50">
+                    <div className="space-y-2 lg:col-span-1">
                         <Label className="text-xs font-black uppercase opacity-60">
                             Buscar noticia
                         </Label>
@@ -97,31 +92,7 @@ export default function NewsAll({ news = [] }: { news: any[] }) {
 
                     <div className="space-y-2">
                         <Label className="text-xs font-black uppercase opacity-60">
-                            Tipo de Noticia
-                        </Label>
-                        <div className="relative">
-                            <Tag className="absolute top-2.5 left-2.5 h-4 w-4 text-zinc-400" />
-                            <select
-                                value={categoryId}
-                                onChange={(e) => setCategoryId(e.target.value)}
-                                className="flex h-10 w-full rounded-md border border-input bg-background px-9 text-sm focus:ring-2 focus:ring-[#f02a34] focus:outline-none dark:bg-zinc-950"
-                            >
-                                <option value="all">Todas las etiquetas</option>
-                                {availableCategories.map((cat: any) => (
-                                    <option
-                                        key={cat.id}
-                                        value={cat.id.toString()}
-                                    >
-                                        {cat.nombre}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
-
-                    <div className="space-y-2">
-                        <Label className="text-xs font-black uppercase opacity-60">
-                            Publicado desde
+                            Desde
                         </Label>
                         <Input
                             type="date"
@@ -154,7 +125,6 @@ export default function NewsAll({ news = [] }: { news: any[] }) {
                             className="text-xs font-bold text-[#f02a34] uppercase hover:bg-red-50"
                             onClick={() => {
                                 setSearch('');
-                                setCategoryId('all');
                                 setDateFrom('');
                                 setDateTo('');
                             }}
@@ -166,7 +136,7 @@ export default function NewsAll({ news = [] }: { news: any[] }) {
                 </div>
 
                 {/* Grid de Noticias */}
-                {filteredNews.length === 0 ? (
+                {paginatedNews.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-24 text-center">
                         <div className="rounded-full bg-zinc-100 p-8 dark:bg-zinc-800">
                             <Newspaper size={48} className="text-zinc-400" />
@@ -174,19 +144,50 @@ export default function NewsAll({ news = [] }: { news: any[] }) {
                         <h3 className="mt-6 text-2xl font-bold dark:text-white">
                             Sin resultados
                         </h3>
-                        <p className="max-w-xs text-zinc-500">
-                            No encontramos noticias que coincidan con los
-                            filtros seleccionados.
-                        </p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3">
-                        {filteredNews.map((n) => (
-                            <div key={n.id} className="animate-fade-in">
-                                <EventContainer eventData={n} />
+                    <>
+                        <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3">
+                            {paginatedNews.map((n) => (
+                                <div key={n.id} className="animate-fade-in">
+                                    <EventContainer eventData={n} />
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Paginación Visual */}
+                        {totalPages > 1 && (
+                            <div className="mt-16 flex items-center justify-center gap-4">
+                                <Button
+                                    variant="outline"
+                                    disabled={currentPage === 1}
+                                    onClick={() =>
+                                        setCurrentPage((prev) => prev - 1)
+                                    }
+                                    className="rounded-full"
+                                >
+                                    <ChevronLeft className="mr-2 h-4 w-4" />{' '}
+                                    Anterior
+                                </Button>
+
+                                <span className="text-sm font-bold tracking-widest text-zinc-500 uppercase">
+                                    Página {currentPage} de {totalPages}
+                                </span>
+
+                                <Button
+                                    variant="outline"
+                                    disabled={currentPage === totalPages}
+                                    onClick={() =>
+                                        setCurrentPage((prev) => prev + 1)
+                                    }
+                                    className="rounded-full"
+                                >
+                                    Siguiente{' '}
+                                    <ChevronRight className="ml-2 h-4 w-4" />
+                                </Button>
                             </div>
-                        ))}
-                    </div>
+                        )}
+                    </>
                 )}
             </div>
         </HomeLayout>

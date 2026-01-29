@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import HomeLayout from '@/layouts/HomeLayout';
 import { Head } from '@inertiajs/react';
-import { FilterX, Search, Tag } from 'lucide-react';
+import { ChevronLeft, ChevronRight, FilterX, Search, Tag } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 export default function EventsAll({ events = [] }: { events: any[] }) {
@@ -14,6 +14,10 @@ export default function EventsAll({ events = [] }: { events: any[] }) {
     const [dateFrom, setDateFrom] = useState('');
     const [dateTo, setDateTo] = useState('');
 
+    // Estado para paginación
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 9;
+
     // 1. Obtener categorías ÚNICAS de los eventos presentes (excluyendo noticias)
     const availableCategories = useMemo(() => {
         const cats = events
@@ -21,11 +25,9 @@ export default function EventsAll({ events = [] }: { events: any[] }) {
             .filter((cat) => {
                 if (!cat) return false;
                 const name = cat.nombre.toLowerCase();
-                // Excluir categorías que sean noticia
                 return !name.includes('noticia') && !name.includes('news');
             });
 
-        // Quitar duplicados por ID
         const uniqueCats = Array.from(
             new Map(cats.map((c) => [c.id, c])).values(),
         );
@@ -34,26 +36,22 @@ export default function EventsAll({ events = [] }: { events: any[] }) {
         );
     }, [events]);
 
-    // 2. Lógica de filtrado combinada
+    // 2. Lógica de filtrado
     const filteredEvents = useMemo(() => {
-        return events.filter((event) => {
+        const filtered = events.filter((event) => {
             const catName = event.category?.nombre?.toLowerCase() || '';
 
-            // Filtro de seguridad: No mostrar noticias nunca en esta vista
             if (catName.includes('noticia') || catName.includes('news'))
                 return false;
 
-            // Filtro por texto (título o extracto)
             const matchesSearch =
                 event.titulo.toLowerCase().includes(search.toLowerCase()) ||
                 event.extracto?.toLowerCase().includes(search.toLowerCase());
 
-            // Filtro por Categoría
             const matchesCategory =
                 categoryId === 'all' ||
                 event.category_id?.toString() === categoryId;
 
-            // Filtro por Fechas
             const eventDate = event.fecha_evento
                 ? new Date(event.fecha_evento).getTime()
                 : null;
@@ -65,12 +63,22 @@ export default function EventsAll({ events = [] }: { events: any[] }) {
                 if (from && eventDate < from) matchesDate = false;
                 if (to && eventDate > to) matchesDate = false;
             } else if (from || to) {
-                matchesDate = false; // Si hay filtro de fecha pero el evento no tiene fecha
+                matchesDate = false;
             }
 
             return matchesSearch && matchesCategory && matchesDate;
         });
+
+        setCurrentPage(1); // Resetear a pág 1 al filtrar
+        return filtered;
     }, [events, search, categoryId, dateFrom, dateTo]);
+
+    // 3. Lógica de Paginación Local
+    const totalPages = Math.ceil(filteredEvents.length / itemsPerPage);
+    const paginatedEvents = useMemo(() => {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        return filteredEvents.slice(startIndex, startIndex + itemsPerPage);
+    }, [filteredEvents, currentPage]);
 
     const hasFilters =
         search !== '' ||
@@ -82,7 +90,7 @@ export default function EventsAll({ events = [] }: { events: any[] }) {
         <HomeLayout>
             <Head title="Explorar Eventos" />
 
-            <div className="mx-auto max-w-7xl px-6 py-12">
+            <div className="mx-auto max-w-7xl px-6 py-12 text-left">
                 <header className="mb-12">
                     <h1 className="text-5xl font-black uppercase italic dark:text-white">
                         Explorar Eventos
@@ -92,7 +100,7 @@ export default function EventsAll({ events = [] }: { events: any[] }) {
                     </p>
                 </header>
 
-                {/* Barra de Filtros Estilo Glassmorphism */}
+                {/* Barra de Filtros */}
                 <div className="mb-8 grid grid-cols-1 gap-4 rounded-2xl border border-zinc-200 bg-zinc-50/50 p-6 lg:grid-cols-4 dark:border-zinc-800 dark:bg-zinc-900/50">
                     <div className="space-y-2">
                         <Label className="text-xs font-black uppercase opacity-60">
@@ -180,8 +188,8 @@ export default function EventsAll({ events = [] }: { events: any[] }) {
                     )}
                 </div>
 
-                {/* Resultados */}
-                {filteredEvents.length === 0 ? (
+                {/* Resultados con Paginación */}
+                {paginatedEvents.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-20 text-center">
                         <div className="rounded-full bg-zinc-100 p-6 dark:bg-zinc-800">
                             <Search size={48} className="text-zinc-400" />
@@ -189,18 +197,54 @@ export default function EventsAll({ events = [] }: { events: any[] }) {
                         <h3 className="mt-4 text-xl font-bold dark:text-white">
                             No se encontraron eventos
                         </h3>
-                        <p className="text-zinc-500">
-                            Prueba ajustando los filtros de búsqueda.
-                        </p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-                        {filteredEvents.map((e) => (
-                            <div key={e.id} className="animate-fade-in">
-                                <EventContainer eventData={e} />
+                    <>
+                        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+                            {paginatedEvents.map((e) => (
+                                <div key={e.id} className="animate-fade-in">
+                                    <EventContainer eventData={e} />
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Paginador */}
+                        {totalPages > 1 && (
+                            <div className="mt-16 flex items-center justify-center gap-6">
+                                <Button
+                                    variant="outline"
+                                    disabled={currentPage === 1}
+                                    onClick={() =>
+                                        setCurrentPage((prev) => prev - 1)
+                                    }
+                                    className="rounded-full border-zinc-300 hover:text-[#f02a34]"
+                                >
+                                    <ChevronLeft className="mr-2 h-4 w-4" />{' '}
+                                    Anterior
+                                </Button>
+
+                                <span className="text-xs font-black tracking-[0.2em] text-zinc-400 uppercase">
+                                    Página{' '}
+                                    <span className="text-zinc-900 dark:text-white">
+                                        {currentPage}
+                                    </span>{' '}
+                                    de {totalPages}
+                                </span>
+
+                                <Button
+                                    variant="outline"
+                                    disabled={currentPage === totalPages}
+                                    onClick={() =>
+                                        setCurrentPage((prev) => prev + 1)
+                                    }
+                                    className="rounded-full border-zinc-300 hover:text-[#f02a34]"
+                                >
+                                    Siguiente{' '}
+                                    <ChevronRight className="ml-2 h-4 w-4" />
+                                </Button>
                             </div>
-                        ))}
-                    </div>
+                        )}
+                    </>
                 )}
             </div>
         </HomeLayout>

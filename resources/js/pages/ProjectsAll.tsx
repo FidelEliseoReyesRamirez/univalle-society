@@ -4,7 +4,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import HomeLayout from '@/layouts/HomeLayout';
 import { Head } from '@inertiajs/react';
-import { Code2, FilterX, Search, Tag } from 'lucide-react';
+import {
+    ChevronLeft,
+    ChevronRight,
+    Code2,
+    FilterX,
+    Search,
+    Tag,
+} from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 export default function ProjectsAll({ projects = [] }: { projects: any[] }) {
@@ -13,6 +20,10 @@ export default function ProjectsAll({ projects = [] }: { projects: any[] }) {
     const [categoryId, setCategoryId] = useState('all');
     const [dateFrom, setDateFrom] = useState('');
     const [dateTo, setDateTo] = useState('');
+
+    // Estado para paginación
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 9;
 
     // 1. Obtener categorías únicas presentes en los proyectos
     const availableCategories = useMemo(() => {
@@ -30,18 +41,15 @@ export default function ProjectsAll({ projects = [] }: { projects: any[] }) {
 
     // 2. Lógica de filtrado reactiva
     const filteredProjects = useMemo(() => {
-        return projects.filter((project) => {
-            // Texto: Título o extracto
+        const filtered = projects.filter((project) => {
             const matchesSearch =
                 project.titulo.toLowerCase().includes(search.toLowerCase()) ||
                 project.extracto?.toLowerCase().includes(search.toLowerCase());
 
-            // Categoría
             const matchesCategory =
                 categoryId === 'all' ||
                 project.category_id?.toString() === categoryId;
 
-            // Fechas (Fecha de inicio o publicación del proyecto)
             const projectDate = project.fecha_evento
                 ? new Date(project.fecha_evento).getTime()
                 : null;
@@ -58,7 +66,17 @@ export default function ProjectsAll({ projects = [] }: { projects: any[] }) {
 
             return matchesSearch && matchesCategory && matchesDate;
         });
+
+        setCurrentPage(1); // Resetear a página 1 al filtrar
+        return filtered;
     }, [projects, search, categoryId, dateFrom, dateTo]);
+
+    // 3. Lógica de Paginación Local
+    const totalPages = Math.ceil(filteredProjects.length / itemsPerPage);
+    const paginatedProjects = useMemo(() => {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        return filteredProjects.slice(startIndex, startIndex + itemsPerPage);
+    }, [filteredProjects, currentPage]);
 
     const hasFilters =
         search !== '' ||
@@ -168,7 +186,7 @@ export default function ProjectsAll({ projects = [] }: { projects: any[] }) {
                 </div>
 
                 {/* Galería de Proyectos */}
-                {filteredProjects.length === 0 ? (
+                {paginatedProjects.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-24 text-center">
                         <div className="rounded-full bg-zinc-100 p-8 dark:bg-zinc-800">
                             <Code2 size={48} className="text-zinc-400" />
@@ -176,24 +194,59 @@ export default function ProjectsAll({ projects = [] }: { projects: any[] }) {
                         <h3 className="mt-6 text-2xl font-bold dark:text-white">
                             Sin coincidencias
                         </h3>
-                        <p className="max-w-xs text-zinc-500 italic">
-                            No hay proyectos que coincidan con estos criterios
-                            de búsqueda.
-                        </p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-                        {filteredProjects.map((p) => (
-                            <div key={p.id} className="animate-fade-in">
-                                <EventContainer
-                                    eventData={{
-                                        ...p,
-                                        nombre_plantilla: 'ProjectDetailed',
-                                    }}
-                                />
+                    <>
+                        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+                            {paginatedProjects.map((p) => (
+                                <div key={p.id} className="animate-fade-in">
+                                    <EventContainer
+                                        eventData={{
+                                            ...p,
+                                            nombre_plantilla: 'ProjectDetailed',
+                                        }}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Paginación */}
+                        {totalPages > 1 && (
+                            <div className="mt-16 flex items-center justify-center gap-6">
+                                <Button
+                                    variant="outline"
+                                    disabled={currentPage === 1}
+                                    onClick={() =>
+                                        setCurrentPage((prev) => prev - 1)
+                                    }
+                                    className="rounded-full border-zinc-300 dark:border-zinc-700"
+                                >
+                                    <ChevronLeft className="mr-2 h-4 w-4" />{' '}
+                                    Anterior
+                                </Button>
+
+                                <span className="text-xs font-black tracking-[0.2em] text-zinc-400 uppercase">
+                                    Página{' '}
+                                    <span className="text-zinc-900 dark:text-white">
+                                        {currentPage}
+                                    </span>{' '}
+                                    de {totalPages}
+                                </span>
+
+                                <Button
+                                    variant="outline"
+                                    disabled={currentPage === totalPages}
+                                    onClick={() =>
+                                        setCurrentPage((prev) => prev + 1)
+                                    }
+                                    className="rounded-full border-zinc-300 dark:border-zinc-700"
+                                >
+                                    Siguiente{' '}
+                                    <ChevronRight className="ml-2 h-4 w-4" />
+                                </Button>
                             </div>
-                        ))}
-                    </div>
+                        )}
+                    </>
                 )}
             </div>
         </HomeLayout>
