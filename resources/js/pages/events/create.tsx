@@ -264,7 +264,7 @@ export default function Create({ categories }: { categories: any[] }) {
                                     </span>
                                     <span className="text-xs text-muted-foreground">
                                         Formatos soportados: JPG, PNG, WEBP
-                                        (Máx. 2MB)
+                                        (Máx. 5MB)
                                     </span>
                                     <input
                                         type="file"

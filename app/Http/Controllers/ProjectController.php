@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage; // Añadido para gestionar archivos
 
 class ProjectController extends Controller
 {
@@ -67,7 +68,7 @@ class ProjectController extends Controller
             'contenido' => 'required|string',
             'category_id' => 'required|exists:categories,id',
             'ubicacion' => 'nullable|string',
-            'imagen' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'imagen' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120', // <--- CORREGIDO A 5MB
         ]);
 
         if ($request->hasFile('imagen')) {
@@ -92,10 +93,16 @@ class ProjectController extends Controller
             'contenido' => 'required|string',
             'category_id' => 'required|exists:categories,id',
             'ubicacion' => 'nullable|string',
-            'imagen' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'imagen' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120', // <--- CORREGIDO A 5MB
         ]);
 
         if ($request->hasFile('imagen')) {
+            // Opcional: Eliminar la imagen anterior del disco para no acumular basura
+            if ($proyecto->imagen_ruta) {
+                $oldPath = str_replace('/storage/', '', $proyecto->imagen_ruta);
+                Storage::disk('public')->delete($oldPath);
+            }
+
             $path = $request->file('imagen')->store('projects', 'public');
             $validated['imagen_ruta'] = '/storage/' . $path;
         }

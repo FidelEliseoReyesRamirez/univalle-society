@@ -81,7 +81,7 @@ class EventController extends Controller
                 'fecha_evento' => 'nullable|date',
                 'ubicacion' => 'nullable|string',
                 'nombre_plantilla' => 'required|string',
-                'imagen' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+                'imagen' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
             ]);
 
             if ($request->hasFile('imagen')) {
