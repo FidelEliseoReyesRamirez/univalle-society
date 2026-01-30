@@ -121,14 +121,14 @@ export default function Welcome({
                                     <>
                                         <Link
                                             href={login()}
-                                            className="px-4 py-1.5 text-m font-medium text-white uppercase hover:underline tracking-widest"
+                                            className="text-m px-4 py-1.5 font-medium tracking-widest text-white uppercase hover:underline"
                                         >
                                             Ingresar
                                         </Link>
                                         {canRegister && (
                                             <Link
                                                 href={register()}
-                                                className="btn-11 rounded px-4 py-1.5 text-m font-medium  uppercase tracking-widest"
+                                                className="btn-11 text-m rounded px-4 py-1.5 font-medium tracking-widest uppercase"
                                             >
                                                 Regístrate
                                             </Link>
@@ -142,10 +142,10 @@ export default function Welcome({
 
                 <div className="hero-section flex h-[85vh] w-full flex-col items-center justify-center px-4 pt-20 text-center">
                     <div className="animate-fade-in">
-                        <h1 className="title font-display text-6xl text-white drop-shadow-lg md:text-8xl mb-4">
+                        <h1 className="title mb-4 font-display text-6xl text-white drop-shadow-lg md:text-8xl">
                             SICI - ISI
                         </h1>
-                        <p className="title-sub font-display mx-auto mb-10 max-w-3xl text-lg text-white uppercase opacity-90 md:text-3xl">
+                        <p className="title-sub mx-auto mb-10 max-w-3xl font-display text-lg text-white uppercase opacity-90 md:text-3xl">
                             SOCIEDAD DE INVESTIGACIÓN, CIENCIA E INNOVACIÓN DE
                             INGENIERÍA EN SISTEMAS INFORMÁTICOS
                         </p>
@@ -155,14 +155,14 @@ export default function Welcome({
                                 isAdminOrGestor ? (
                                     <Link
                                         href={dashboard()}
-                                        className="btn-12 btn-primary !text-white transition-transform hover:scale-105"
+                                        className="btn-13 dark:btn-14 inline-block w-full bg-[#0f1923] px-10 py-5 text-center font-black text-white uppercase shadow-2xl transition-all hover:scale-105 active:scale-95 sm:w-auto dark:bg-red-600"
                                     >
                                         ADMINISTRAR PORTAL
                                     </Link>
                                 ) : (
                                     <a
                                         href="#Eventos"
-                                        className="btn-12 btn-primary !text-white transition-transform hover:scale-105"
+                                        className="btn-13 dark:btn-14 inline-block w-full bg-[#0f1923] px-10 py-5 text-center font-black text-white uppercase shadow-2xl transition-all hover:scale-105 active:scale-95 sm:w-auto dark:bg-red-600"
                                     >
                                         EXPLORAR NOVEDADES
                                     </a>
@@ -170,7 +170,7 @@ export default function Welcome({
                             ) : (
                                 <Link
                                     href={register()}
-                                    className="btn-12 btn-primary !text-white transition-transform hover:scale-105"
+                                    className="btn-13 dark:btn-14 inline-block w-full bg-[#0f1923] px-10 py-5 text-center font-black text-white uppercase shadow-2xl transition-all hover:scale-105 active:scale-95 sm:w-auto dark:bg-red-600"
                                 >
                                     ÚNETE A LA COMUNIDAD
                                 </Link>
@@ -298,36 +298,106 @@ export default function Welcome({
                         </div>
                     </div>
                 )}
+                {/* --- SECCIÓN ACERCA DE NOSOTROS --- */}
+                <div
+                    id="Nosotros"
+                    className="relative flex w-full justify-center overflow-hidden bg-[#f02a34] py-20 text-white md:py-32 dark:bg-[#1a0505]"
+                >
+                    {/* Degradados de fondo para profundidad */}
+                    <div className="pointer-events-none absolute top-0 left-0 h-full w-full">
+                        <div className="absolute -top-24 -left-24 h-[500px] w-[500px] rounded-full bg-white/10 blur-[100px]"></div>
+                        <div className="absolute right-0 bottom-0 h-[400px] w-[400px] rounded-full bg-black/20 blur-[120px]"></div>
+                    </div>
 
-                {/* --- SECCIÓN ¿QUÉ HACEMOS? --- */}
-                <div className="flex w-full justify-center bg-[#f02a34] py-24 text-white dark:bg-[#1a0505]">
-                    <div className="mx-auto flex max-w-7xl flex-col items-center gap-16 px-6 md:flex-row">
-                        <img
-                            src={aboutImg}
-                            className="animate-soft-float max-w-md"
-                            alt="Ilustración SICI"
-                        />
+                    <div className="relative mx-auto flex max-w-7xl flex-col items-center gap-12 px-10 md:flex-row md:px-16">
+                        {/* Imagen con sombra proyectada */}
+                        <div className="w-full max-w-sm shrink-0 md:w-1/2 md:max-w-md">
+                            <img
+                                src={aboutImg}
+                                className="animate-soft-float w-full object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.4)]"
+                                alt="SICI Comunidad"
+                            />
+                        </div>
+
                         <div className="w-full text-left md:w-1/2">
-                            <h1 className="font-display text-6xl font-black uppercase md:text-8xl">
-                                ¿QUÉ HACEMOS?
+                            <div className="mb-6 inline-block rounded-full bg-zinc-900/30 px-4 py-1.5 backdrop-blur-md">
+                                <span className="text-[10px] font-black tracking-[0.3em] uppercase">
+                                    Identidad de Carrera
+                                </span>
+                            </div>
+
+                            <h1 className="font-display text-5xl leading-[0.85] font-black tracking-tighter uppercase italic md:text-8xl">
+                                ACERCA DE <br /> NOSOTROS
                             </h1>
-                            <p className="mt-6 text-xl font-bold uppercase dark:text-red-500">
-                                LA CREATIVIDAD ES LA MEJOR ARMA.
+
+                            <p className="mt-8 text-xl font-black text-zinc-900 uppercase italic dark:text-red-500">
+                                Somos el motor de innovación de Sistemas.
                             </p>
-                            <p className="mt-4 mb-10 text-lg opacity-80">
-                                Promovemos la investigación y la innovación
-                                tecnológica a través del trabajo colaborativo.
+
+                            <p className="mt-4 max-w-xl text-lg leading-relaxed font-medium opacity-90">
+                                Somos una comunidad activa de estudiantes
+                                apasionados por la tecnología. No solo
+                                estudiamos la carrera, la vivimos creando
+                                espacios de colaboración, desarrollo real y
+                                networking estratégico entre colegas.
                             </p>
-                            <a
-                                href="https://chat.whatsapp.com/FkjOK8j9Afl1fcabVlCPGI"
-                                className="btn-13 inline-block dark:btn-14 px-10 py-4 font-black text-white uppercase transition-all hover:scale-105 active:scale-95 bg-[#0f1923] dark:bg-red-600" 
-                            >
-                                ÚNETE AL GRUPO DE WAP
-                            </a>
+
+                            {/* Grid de Pilares con Bordes Semitransparentes (Sin Hover) */}
+                            <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                <div className="rounded-2xl border border-white/20 bg-white/10 p-5 backdrop-blur-sm">
+                                    <h3 className="text-xs font-black tracking-widest text-zinc-900 uppercase dark:text-white">
+                                        Socialización
+                                    </h3>
+                                    <p className="mt-2 text-[11px] leading-snug font-bold opacity-80">
+                                        Unimos a todas las generaciones de la
+                                        carrera en un solo entorno colaborativo.
+                                    </p>
+                                </div>
+                                <div className="rounded-2xl border border-white/20 bg-white/10 p-5 backdrop-blur-sm">
+                                    <h3 className="text-xs font-black tracking-widest text-zinc-900 uppercase dark:text-white">
+                                        Proyectos Reales
+                                    </h3>
+                                    <p className="mt-2 text-[11px] leading-snug font-bold opacity-80">
+                                        Somos el puente entre la teoría
+                                        académica y la práctica técnica de alto
+                                        nivel.
+                                    </p>
+                                </div>
+                                <div className="rounded-2xl border border-white/20 bg-white/10 p-5 backdrop-blur-sm">
+                                    <h3 className="text-xs font-black tracking-widest text-zinc-900 uppercase dark:text-white">
+                                        Cultura Tech
+                                    </h3>
+                                    <p className="mt-2 text-[11px] leading-snug font-bold opacity-80">
+                                        Debatimos y exploramos las tendencias
+                                        que están definiendo el futuro del
+                                        software.
+                                    </p>
+                                </div>
+                                <div className="rounded-2xl border border-white/20 bg-white/10 p-5 backdrop-blur-sm">
+                                    <h3 className="text-xs font-black tracking-widest text-zinc-900 uppercase dark:text-white">
+                                        Networking
+                                    </h3>
+                                    <p className="mt-2 text-[11px] leading-snug font-bold opacity-80">
+                                        Creamos conexiones valiosas que
+                                        potencian el futuro profesional de cada
+                                        miembro.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="mt-12 flex justify-start sm:justify-start">
+                                <a
+                                    href="https://chat.whatsapp.com/FkjOK8j9Afl1fcabVlCPGI"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="btn-13 dark:btn-14 inline-block w-full bg-[#0f1923] px-10 py-5 text-center font-black text-white uppercase shadow-[0_10px_30px_rgba(0,0,0,0.3)] ring-1 ring-white/10 transition-all hover:scale-105 active:scale-95 sm:w-auto dark:bg-red-600"
+                                >
+                                    Únete a la Comunidad en WhatsApp
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
-
                 {/* --- SECCIÓN PROYECTOS --- */}
                 {projectsToShow.length > 0 && (
                     <div
