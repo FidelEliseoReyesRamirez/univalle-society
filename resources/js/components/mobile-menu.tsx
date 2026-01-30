@@ -16,30 +16,33 @@ export default function MobileMenu({
     canRegister = true,
 }: Props) {
     useEffect(() => {
-        const prev = document.body.style.overflow;
-        if (isOpen) document.body.style.overflow = 'hidden';
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
         return () => {
-            document.body.style.overflow = prev;
+            document.body.style.overflow = 'unset';
         };
     }, [isOpen]);
 
     if (typeof document === 'undefined') return null;
 
-    // Lógica para determinar si es admin o gestor
     const isAdminOrGestor =
         auth?.user?.role === 'admin' || auth?.user?.role === 'gestor';
 
     return (
         <div
             aria-hidden={!isOpen}
-            className={`fixed inset-0 z-50 flex items-start justify-center transition-all duration-300 ${
-                isOpen ? 'pointer-events-auto' : 'pointer-events-none'
+            className={`fixed inset-0 z-[100] flex transition-all duration-300 ${
+                isOpen ? 'visible' : 'invisible'
             }`}
         >
+            {/* Overlay con opacidad */}
             <div
                 onClick={onClose}
-                className={`absolute inset-0 bg-black transition-opacity duration-300 ${
-                    isOpen ? 'opacity-95' : 'opacity-0'
+                className={`absolute inset-0 bg-black/95 transition-opacity duration-300 ${
+                    isOpen ? 'opacity-100' : 'opacity-0'
                 }`}
             />
 
@@ -47,11 +50,13 @@ export default function MobileMenu({
                 role="dialog"
                 aria-modal="true"
                 onClick={(e) => e.stopPropagation()}
-                className={`relative flex h-full w-full max-w-full transform flex-col p-8 text-white transition-transform duration-300 ease-in-out ${
+                className={`relative flex w-full flex-col p-8 text-white transition-transform duration-500 ease-in-out ${
+                    // Usamos h-[100dvh] para ajustar al alto real del móvil (evita recortes en Firefox/Safari)
                     isOpen ? 'translate-y-0' : '-translate-y-full'
-                }`}
+                } h-[100dvh] overflow-y-auto`} 
             >
-                <div className="flex items-center justify-between">
+                {/* Cabecera del Menú */}
+                <div className="flex shrink-0 items-center justify-between">
                     <div className="text-2xl font-black tracking-tighter uppercase italic">
                         SICI<span className="text-[#f02a34]">.</span>MENU
                     </div>
@@ -64,71 +69,49 @@ export default function MobileMenu({
                     </button>
                 </div>
 
-                <nav className="mt-12 flex flex-col gap-10 text-3xl font-black tracking-tight uppercase italic">
-                    <Link
-                        href="/"
-                        onClick={onClose}
-                        className="hover:text-[#f02a34]"
-                    >
+                {/* Navegación Principal */}
+                <nav className="mt-12 flex flex-col gap-8 text-3xl font-black tracking-tight uppercase italic">
+                    <Link href="/" onClick={onClose} className="hover:text-[#f02a34]">
                         INICIO
                     </Link>
-                    <Link
-                        href="/eventos-all"
-                        onClick={onClose}
-                        className="hover:text-[#f02a34]"
-                    >
+                    <Link href="/eventos-all" onClick={onClose} className="hover:text-[#f02a34]">
                         EVENTOS
                     </Link>
-                    <Link
-                        href="/noticias-all"
-                        onClick={onClose}
-                        className="hover:text-[#f02a34]"
-                    >
+                    <Link href="/noticias-all" onClick={onClose} className="hover:text-[#f02a34]">
                         NOTICIAS
                     </Link>
-                    <Link
-                        href="/proyectos-all"
-                        onClick={onClose}
-                        className="hover:text-[#f02a34]"
-                    >
+                    <Link href="/proyectos-all" onClick={onClose} className="hover:text-[#f02a34]">
                         PROYECTOS
                     </Link>
                 </nav>
 
-                <div className="mt-auto mb-10 border-t border-white/10 pt-6">
+                {/* Sección Inferior (Auth) - Con margen superior auto para empujar hacia abajo */}
+                <div className="mt-auto pt-10 pb-8 border-t border-white/10">
                     {auth?.user ? (
-                        <div className="flex flex-col gap-2">
-                            {/* Link principal dinámico */}
+                        <div className="flex flex-col gap-4">
                             <Link
-                                href={
-                                    isAdminOrGestor
-                                        ? dashboard()
-                                        : '/settings/profile'
-                                }
+                                href={isAdminOrGestor ? dashboard() : '/settings/profile'}
                                 onClick={onClose}
-                                className="block py-4 text-xl font-bold tracking-widest text-[#f02a34] uppercase"
+                                className="block text-xl font-bold tracking-widest text-[#f02a34] uppercase"
                             >
-                                {isAdminOrGestor
-                                    ? 'DASHBOARD'
-                                    : `HOLA, ${auth.user.name}`}
+                                {isAdminOrGestor ? 'DASHBOARD' : `HOLA, ${auth.user.name}`}
                             </Link>
 
-                            {/* Botón de Logout usando ruta directa para evitar errores de Ziggy */}
                             <Link
                                 href="/logout"
                                 method="post"
                                 as="button"
-                                className="block w-full py-2 text-left text-sm font-bold tracking-[0.2em] text-zinc-500 uppercase hover:text-white"
+                                className="block text-left text-sm font-bold tracking-[0.2em] text-zinc-500 uppercase hover:text-white"
                             >
                                 CERRAR SESIÓN
                             </Link>
                         </div>
                     ) : (
-                        <div className="flex flex-col gap-4">
+                        <div className="flex flex-col gap-6">
                             <Link
                                 href={login()}
                                 onClick={onClose}
-                                className="block py-4 text-xl font-bold tracking-widest uppercase hover:text-[#f02a34]"
+                                className="block text-2xl font-black tracking-widest uppercase hover:text-[#f02a34]"
                             >
                                 LOGIN
                             </Link>
@@ -136,7 +119,7 @@ export default function MobileMenu({
                                 <Link
                                     href={register()}
                                     onClick={onClose}
-                                    className="block py-4 text-xl font-bold tracking-widest uppercase opacity-60 hover:opacity-100"
+                                    className="block text-2xl font-black tracking-widest uppercase opacity-60 hover:opacity-100"
                                 >
                                     REGISTER
                                 </Link>
