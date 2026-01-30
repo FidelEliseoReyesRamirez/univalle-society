@@ -21,11 +21,20 @@ html, body {
   background-color: #070617;
 }
 
+.contain {
+  box-sizing: border-box;
+  padding: 30px 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 20px;
+}
+
 .footer .col {
   width: 190px;
-  float: left;
   box-sizing: border-box;
   padding: 0px 20px 20px 20px;
+  float: none;
 }
 
 .footer .col h1 {

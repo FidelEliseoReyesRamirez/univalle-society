@@ -319,10 +319,10 @@ export default function Welcome({
                                 tecnológica a través del trabajo colaborativo.
                             </p>
                             <a
-                                href="mailto:sici.isi.upto@gmail.com"
+                                href="https://chat.whatsapp.com/FkjOK8j9Afl1fcabVlCPGI"
                                 className="btn-13 inline-block dark:btn-14 px-10 py-4 font-black text-white uppercase transition-all hover:scale-105 active:scale-95 bg-[#0f1923] dark:bg-red-600" 
                             >
-                                CONTÁCTATE
+                                ÚNETE AL GRUPO DE WAP
                             </a>
                         </div>
                     </div>

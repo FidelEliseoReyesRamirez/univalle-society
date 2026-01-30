@@ -13,70 +13,49 @@ const Footer = () => {
         <div className="contain">
 
           <div className="col">
-            <h1>Company</h1>
+            <h1>UNIVALLE</h1>
             <ul>
-              <li>About</li>
-              <li>Mission</li>
-              <li>Services</li>
-              <li>Social</li>
-              <li>Get in touch</li>
+              <li><a href="https://www.univalle.edu/" target="_blank">Página Principal</a></li>
+              <li><a href="https://www.univalle.edu/?page_id=454" target="_blank">Sede La Paz</a></li>
+              <li><a href="https://enlace.univalle.edu/san/webform/PAutenticar.aspx " target="_blank">SIU</a></li>
+              <li><a href="https://www.univalle.edu/?page_id=440" target="_blank">Sobre Univalle</a></li>
+              <li><a href="https://www.google.com/maps/place/Universidad+Privada+del+Valle+Sede+La+Paz/data=!4m2!3m1!1s0x0:0xacceb97486edb698?sa=X&ved=1t:2428&ictx=111&cshid=1769698180341152" target="_blank">Ubicación Google Maps</a></li>
             </ul>
           </div>
 
           <div className="col">
-            <h1>Products</h1>
+            <h1>CONTACTO</h1>
             <ul>
-              <li>About</li>
-              <li>Mission</li>
-              <li>Services</li>
-              <li>Social</li>
-              <li>Get in touch</li>
+              <li><a href="https://chat.whatsapp.com/FkjOK8j9Afl1fcabVlCPGI" >Whatsapp</a></li>
+              <li><a href="https://www.facebook.com/share/1DFRYJekGt/" target="_blank" rel="noopener noreferrer">Facebook</a></li>
+              <li><a href="https://www.tiktok.com/@sici.univalle.la" target="_blank" rel="noopener noreferrer">TikTok</a></li>
+              <li><a href="mailto:siciunivalle@outlook.com" >Correo</a></li>
             </ul>
           </div>
 
           <div className="col">
-            <h1>Accounts</h1>
+            <h1>RECURSOS</h1>
             <ul>
-              <li>About</li>
-              <li>Mission</li>
-              <li>Services</li>
-              <li>Social</li>
-              <li>Get in touch</li>
+              <li><a href="#" target="_blank">Eventos</a></li>
+              <li><a href="#" target="_blank">Noticias</a></li>
+              <li><a href="#" target="_blank">Proyectos</a></li>
+              <li><a href="#" target="_blank">Investigación</a></li>
+              <li><a href="#" target="_blank">Acerca de</a></li>
             </ul>
           </div>
 
-          <div className="col">
-            <h1>Resources</h1>
-            <ul>
-              <li>Webmail</li>
-              <li>Redeem code</li>
-              <li>WHOIS lookup</li>
-              <li>Site map</li>
-              <li>Web templates</li>
-              <li>Email templates</li>
-            </ul>
-          </div>
-
-          <div className="col">
-            <h1>Support</h1>
-            <ul>
-              <li>Contact us</li>
-              <li>Web chat</li>
-              <li>Open ticket</li>
-            </ul>
-          </div>
 
           <div className="col social">
-            <h1>Social</h1>
+            <h1>SOCIAL</h1>
             <ul>
               <li>
-                <img src={fb} alt="social" />
+                <a href="https://www.facebook.com/share/1DFRYJekGt/"><img src={fb} alt="facebook" /></a>
               </li>
               <li>
-                <img src={ig} alt="social" />
+                <a href="#"><img src={ig} alt="instagram" /></a>
               </li>
               <li>
-                <img src={tt} alt="social" />
+                <a href="https://www.tiktok.com/@sici.univalle.la"><img src={tt} alt="tiktok" /></a>
               </li>
             </ul>
           </div>
