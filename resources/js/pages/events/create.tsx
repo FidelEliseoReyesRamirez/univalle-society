@@ -8,17 +8,27 @@ import {
     CommandList,
 } from '@/components/ui/command';
 import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover';
+import { Spinner } from '@/components/ui/spinner';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
 import {
     ArrowLeft,
     Calendar,
     Check,
+    CheckCircle2,
     ChevronsUpDown,
     Image as ImageIcon,
     Layout,
@@ -29,6 +39,7 @@ import { useState } from 'react';
 
 export default function Create({ categories }: { categories: any[] }) {
     const [open, setOpen] = useState(false);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
 
     const { data, setData, post, processing, errors } = useForm({
         titulo: '',
@@ -43,7 +54,11 @@ export default function Create({ categories }: { categories: any[] }) {
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        post('/eventos');
+        post('/eventos', {
+            onSuccess: () => {
+                setShowSuccessModal(true);
+            },
+        });
     };
 
     return (
@@ -80,7 +95,12 @@ export default function Create({ categories }: { categories: any[] }) {
                             </label>
                             <input
                                 type="text"
-                                className="w-full rounded-md border border-input bg-background px-4 py-3 text-foreground transition-all focus:ring-2 focus:ring-primary/20 focus:outline-none"
+                                className={cn(
+                                    'w-full rounded-md border bg-background px-4 py-3 text-foreground transition-all focus:ring-2 focus:outline-none',
+                                    errors.titulo
+                                        ? 'border-destructive focus:ring-destructive/20'
+                                        : 'border-input focus:ring-primary/20',
+                                )}
                                 placeholder="Ej: Simposio Internacional de Ingeniería"
                                 value={data.titulo}
                                 onChange={(e) =>
@@ -88,7 +108,7 @@ export default function Create({ categories }: { categories: any[] }) {
                                 }
                             />
                             {errors.titulo && (
-                                <p className="mt-1 text-xs text-destructive">
+                                <p className="mt-1 text-xs font-medium text-destructive">
                                     {errors.titulo}
                                 </p>
                             )}
@@ -104,7 +124,11 @@ export default function Create({ categories }: { categories: any[] }) {
                                     <Button
                                         variant="outline"
                                         role="combobox"
-                                        className="h-12 w-full justify-between border-input px-4 font-normal"
+                                        className={cn(
+                                            'h-12 w-full justify-between border-input px-4 font-normal',
+                                            errors.category_id &&
+                                                'border-destructive',
+                                        )}
                                     >
                                         {data.category_id
                                             ? categories.find(
@@ -156,6 +180,11 @@ export default function Create({ categories }: { categories: any[] }) {
                                     </Command>
                                 </PopoverContent>
                             </Popover>
+                            {errors.category_id && (
+                                <p className="text-xs text-destructive">
+                                    {errors.category_id}
+                                </p>
+                            )}
                         </div>
 
                         {/* Plantilla Visual */}
@@ -291,12 +320,45 @@ export default function Create({ categories }: { categories: any[] }) {
                             size="lg"
                             className="h-12 w-full px-12 text-lg font-bold tracking-widest uppercase shadow-lg shadow-primary/20 transition-all active:scale-95 sm:w-auto"
                         >
-                            <Save className="mr-2 h-5 w-5" /> Guardar
-                            publicación
+                            {processing ? (
+                                <Spinner className="mr-2 !text-white" />
+                            ) : (
+                                <Save className="mr-2 h-5 w-5" />
+                            )}
+                            Guardar publicación
                         </Button>
                     </div>
                 </form>
             </div>
+
+            {/* MODAL DE ÉXITO */}
+            <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader className="flex flex-col items-center justify-center text-center">
+                        <div className="mb-4 rounded-full bg-emerald-100 p-3 dark:bg-emerald-900/30">
+                            <CheckCircle2 className="h-12 w-12 text-emerald-600 dark:text-emerald-400" />
+                        </div>
+                        <DialogTitle className="text-2xl font-black tracking-tighter uppercase italic">
+                            Evento_Registrado
+                        </DialogTitle>
+                        <DialogDescription className="text-base">
+                            La publicación{' '}
+                            <span className="font-bold text-foreground">
+                                "{data.titulo}"
+                            </span>{' '}
+                            ha sido cargada exitosamente en la terminal de SICI.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter className="mt-4">
+                        <Button
+                            onClick={() => router.get('/eventos')}
+                            className="w-full bg-emerald-600 font-bold tracking-widest text-white uppercase hover:bg-emerald-700"
+                        >
+                            Ir al listado de control
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </AppLayout>
     );
 }
