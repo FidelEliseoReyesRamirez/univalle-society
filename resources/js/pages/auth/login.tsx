@@ -7,7 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/auth-layout';
 import { Form, Head } from '@inertiajs/react';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Moon, Sun } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 export default function Login({
     status,
@@ -18,6 +19,33 @@ export default function Login({
     canResetPassword: boolean;
     canRegister: boolean;
 }) {
+    const [isDark, setIsDark] = useState(false);
+
+    // Persistencia del tema
+    useEffect(() => {
+        const savedTheme = localStorage.getItem('theme');
+        if (
+            savedTheme === 'dark' ||
+            (!savedTheme &&
+                window.matchMedia('(prefers-color-scheme: dark)').matches)
+        ) {
+            setIsDark(true);
+            document.documentElement.classList.add('dark');
+        }
+    }, []);
+
+    const toggleTheme = () => {
+        const newTheme = !isDark;
+        setIsDark(newTheme);
+        if (newTheme) {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+        }
+    };
+
     const formatErrorMessage = (message: string) => {
         return message.replace(/(\d+\.\d+)/g, (match) =>
             Math.round(parseFloat(match)).toString(),
@@ -31,9 +59,28 @@ export default function Login({
         >
             <Head title="Log in" />
 
-            {/* ESTO ARREGLA EL LOGO Y SEPARA LOS TEXTOS */}
+            {/* BOTÓN DE TEMA MINIMALISTA */}
+            <div className="absolute top-6 right-6">
+                <button
+                    onClick={toggleTheme}
+                    className="p-2 text-muted-foreground transition-colors hover:text-primary"
+                    type="button"
+                >
+                    {isDark ? (
+                        <Sun size={18} strokeWidth={2.5} />
+                    ) : (
+                        <Moon size={18} strokeWidth={2.5} />
+                    )}
+                </button>
+            </div>
+
             <style>{`
-                /* 1. Bajamos el logo lo suficiente para que no se corte arriba */
+                /* TÍTULO BLANCO SIEMPRE */
+                h1 { color: white !important; }
+
+                /* EVITAR FLASH BLANCO EN F5 */
+                html.dark body { background-color: black !important; }
+
                 img[alt="Logo Sociedad"], 
                 a[href="/"] svg, 
                 .flex.justify-center.mb-4 {
@@ -41,15 +88,11 @@ export default function Login({
                     margin-bottom: 30px !important;
                 }
 
-                /* 2. Bajamos el bloque de título y descripción para que no choquen con el logo */
-                .text-center.space-y-2, 
-                h1, 
-                .text-center.space-y-2 + p {
+                .text-center.space-y-2, h1, .text-center.space-y-2 + p {
                     margin-top: 30px !important;
                     display: block !important;
                 }
 
-                /* 3. Aseguramos espacio antes del formulario */
                 form {
                     margin-top: 5px !important;
                 }
@@ -148,12 +191,12 @@ export default function Login({
 
                             <Button
                                 type="submit"
-                                className="mt-4 w-full font-bold"
+                                className="mt-4 w-full font-bold tracking-widest !text-white uppercase hover:opacity-90"
                                 tabIndex={4}
                                 disabled={processing}
                             >
                                 {processing ? (
-                                    <Spinner className="mr-2" />
+                                    <Spinner className="mr-2 !text-white" />
                                 ) : (
                                     'Iniciar Sesión'
                                 )}
@@ -177,7 +220,7 @@ export default function Login({
             </Form>
 
             {status && (
-                <div className="mt-4 text-center text-sm font-medium text-green-600">
+                <div className="mt-4 text-center text-sm font-medium text-emerald-600 dark:text-emerald-400">
                     {status}
                 </div>
             )}

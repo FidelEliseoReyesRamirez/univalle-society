@@ -69,153 +69,166 @@ export default function Register() {
     };
 
     return (
-        <AuthLayout
-            title="Crear una cuenta"
-            description="Ingresa tus datos a continuación para registrarte"
-        >
-            <Head title="Registro" />
+        /* El relative aquí asegura que el botón se posicione arriba a la derecha de la pantalla */
+        <div className="relative min-h-screen">
+            <AuthLayout
+                title="Crear una cuenta"
+                description="Ingresa tus datos a continuación para registrarte"
+            >
+                <Head title="Registro" />
 
-            {/* BOTÓN DE TEMA MINIMALISTA */}
-            <div className="absolute top-6 right-6">
-                <button
-                    onClick={toggleTheme}
-                    className="p-2 text-muted-foreground transition-colors hover:text-primary"
-                    type="button"
-                >
-                    {isDark ? <Sun size={18} /> : <Moon size={18} />}
-                </button>
-            </div>
+                {/* BOTÓN DE TEMA - ESQUINA SUPERIOR DERECHA ABSOLUTA */}
+                <div className="fixed top-4 right-4 z-50">
+                    <button
+                        onClick={toggleTheme}
+                        className="p-2 text-muted-foreground transition-colors hover:text-primary active:scale-95"
+                        type="button"
+                    >
+                        {isDark ? (
+                            <Sun size={22} strokeWidth={2} />
+                        ) : (
+                            <Moon size={22} strokeWidth={2} />
+                        )}
+                    </button>
+                </div>
 
-            <style>{`
-                /* FUERZA EL TEXTO BLANCO EN EL TÍTULO DE AUTH-LAYOUT */
-                h1 { color: white !important; }
-                
-                /* FUERZA EL FONDO OSCURO EN F5 */
-                html.dark body { background-color: black !important; }
-                
-                img[alt="Logo Sociedad"], svg {
-                    margin-top: 100px !important;
-                    margin-bottom: 20px !important;
-                }
-                .text-center.space-y-2, h1, p {
-                    margin-top: 25px !important;
-                    position: relative !important;
-                }
-                form {
-                    margin-top: 1px !important;
-                }
-            `}</style>
+                <style>{`
+                    h1 { color: white !important; }
+                    html.dark body { background-color: black !important; }
+                    
+                    img[alt="Logo Sociedad"], svg {
+                        margin-top: 100px !important;
+                        margin-bottom: 20px !important;
+                    }
+                    .text-center.space-y-2, h1, p {
+                        margin-top: 25px !important;
+                        position: relative !important;
+                    }
+                    form {
+                        margin-top: 1px !important;
+                    }
+                `}</style>
 
-            <form onSubmit={submit} className="flex flex-col gap-4">
-                <div className="grid gap-4">
-                    <div className="grid gap-1.5">
-                        <Label htmlFor="name">Nombre completo</Label>
-                        <Input
-                            id="name"
-                            value={data.name}
-                            onChange={(e) => setData('name', e.target.value)}
-                            required
-                            autoFocus
-                            placeholder="Tu nombre completo"
-                            className="h-9"
-                        />
-                        <InputError message={errors.name} />
-                    </div>
-
-                    <div className="grid gap-1.5">
-                        <Label htmlFor="email">Correo electrónico</Label>
-                        <Input
-                            id="email"
-                            type="email"
-                            value={data.email}
-                            onChange={(e) => setData('email', e.target.value)}
-                            required
-                            placeholder="correo@ejemplo.com"
-                            className="h-9"
-                        />
-                        <InputError message={errors.email} />
-                    </div>
-
-                    <div className="grid gap-1.5">
-                        <Label htmlFor="password">Contraseña</Label>
-                        <Input
-                            id="password"
-                            type="password"
-                            value={data.password}
-                            onChange={(e) =>
-                                setData('password', e.target.value)
-                            }
-                            required
-                            placeholder="Mínimo 8 caracteres"
-                            className="h-9"
-                        />
-
-                        <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1.5 px-1">
-                            <RequirementItem
-                                met={requirements.length}
-                                text="8+ caracteres"
+                <form onSubmit={submit} className="flex flex-col gap-4">
+                    <div className="grid gap-4">
+                        <div className="grid gap-1.5">
+                            <Label htmlFor="name">Nombre completo</Label>
+                            <Input
+                                id="name"
+                                value={data.name}
+                                onChange={(e) =>
+                                    setData('name', e.target.value)
+                                }
+                                required
+                                autoFocus
+                                placeholder="Tu nombre completo"
+                                className="h-9"
                             />
-                            <RequirementItem
-                                met={requirements.uppercase}
-                                text="Mayúscula"
+                            <InputError message={errors.name} />
+                        </div>
+
+                        <div className="grid gap-1.5">
+                            <Label htmlFor="email">Correo electrónico</Label>
+                            <Input
+                                id="email"
+                                type="email"
+                                value={data.email}
+                                onChange={(e) =>
+                                    setData('email', e.target.value)
+                                }
+                                required
+                                placeholder="correo@ejemplo.com"
+                                className="h-9"
                             />
-                            <RequirementItem
-                                met={requirements.number}
-                                text="Número"
+                            <InputError message={errors.email} />
+                        </div>
+
+                        <div className="grid gap-1.5">
+                            <Label htmlFor="password">Contraseña</Label>
+                            <Input
+                                id="password"
+                                type="password"
+                                value={data.password}
+                                onChange={(e) =>
+                                    setData('password', e.target.value)
+                                }
+                                required
+                                placeholder="Mínimo 8 caracteres"
+                                className="h-9"
                             />
-                            <RequirementItem
-                                met={requirements.special}
-                                text="Símbolo"
+
+                            <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1.5 px-1">
+                                <RequirementItem
+                                    met={requirements.length}
+                                    text="8+ caracteres"
+                                />
+                                <RequirementItem
+                                    met={requirements.uppercase}
+                                    text="Mayúscula"
+                                />
+                                <RequirementItem
+                                    met={requirements.number}
+                                    text="Número"
+                                />
+                                <RequirementItem
+                                    met={requirements.special}
+                                    text="Símbolo"
+                                />
+                            </div>
+                            <InputError message={errors.password} />
+                        </div>
+
+                        <div className="grid gap-1.5">
+                            <Label htmlFor="password_confirmation">
+                                Confirmar contraseña
+                            </Label>
+                            <Input
+                                id="password_confirmation"
+                                type="password"
+                                value={data.password_confirmation}
+                                onChange={(e) =>
+                                    setData(
+                                        'password_confirmation',
+                                        e.target.value,
+                                    )
+                                }
+                                required
+                                placeholder="Repite tu contraseña"
+                                className="h-9"
+                            />
+                            <InputError
+                                message={errors.password_confirmation}
                             />
                         </div>
-                        <InputError message={errors.password} />
-                    </div>
 
-                    <div className="grid gap-1.5">
-                        <Label htmlFor="password_confirmation">
-                            Confirmar contraseña
-                        </Label>
-                        <Input
-                            id="password_confirmation"
-                            type="password"
-                            value={data.password_confirmation}
-                            onChange={(e) =>
-                                setData('password_confirmation', e.target.value)
+                        <Button
+                            type="submit"
+                            className="mt-2 h-10 w-full font-bold tracking-widest !text-white uppercase hover:opacity-90"
+                            disabled={
+                                processing ||
+                                !Object.values(requirements).every(Boolean)
                             }
-                            required
-                            placeholder="Repite tu contraseña"
-                            className="h-9"
-                        />
-                        <InputError message={errors.password_confirmation} />
+                        >
+                            {processing ? (
+                                <Spinner className="h-4 w-4 !text-white" />
+                            ) : (
+                                'Crear cuenta'
+                            )}
+                        </Button>
                     </div>
 
-                    <Button
-                        type="submit"
-                        className="mt-2 h-10 w-full font-bold tracking-widest !text-white uppercase hover:opacity-90"
-                        disabled={
-                            processing ||
-                            !Object.values(requirements).every(Boolean)
-                        }
-                    >
-                        {processing ? (
-                            <Spinner className="h-4 w-4 !text-white" />
-                        ) : (
-                            'Crear cuenta'
-                        )}
-                    </Button>
-                </div>
-
-                <div className="mt-2 text-center text-sm text-muted-foreground">
-                    ¿Ya tienes una cuenta?{' '}
-                    <TextLink
-                        href={login()}
-                        className="font-semibold underline"
-                    >
-                        Iniciar sesión
-                    </TextLink>
-                </div>
-            </form>
-        </AuthLayout>
+                    <div className="mt-2 text-center text-sm text-muted-foreground">
+                        ¿Ya tienes una cuenta?{' '}
+                        <TextLink
+                            href={login()}
+                            className="font-semibold underline"
+                        >
+                            Iniciar sesión
+                        </TextLink>
+                    </div>
+                </form>
+            </AuthLayout>
+        </div>
     );
 }
 
