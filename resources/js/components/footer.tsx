@@ -26,10 +26,10 @@ const Footer = () => {
           <div className="col">
             <h1>CONTACTO</h1>
             <ul>
-              <li><a href="https://chat.whatsapp.com/FkjOK8j9Afl1fcabVlCPGI" >Whatsapp</a></li>
+              <li><a href="https://chat.whatsapp.com/FkjOK8j9Afl1fcabVlCPGI" target="_blank">Whatsapp</a></li>
               <li><a href="https://www.facebook.com/share/1DFRYJekGt/" target="_blank" rel="noopener noreferrer">Facebook</a></li>
               <li><a href="https://www.tiktok.com/@sici.univalle.la" target="_blank" rel="noopener noreferrer">TikTok</a></li>
-              <li><a href="mailto:siciunivalle@outlook.com" >Correo</a></li>
+              <li><a href="mailto:siciunivalle@outlook.com" target="_blank">Correo</a></li>
             </ul>
           </div>
 
@@ -49,13 +49,13 @@ const Footer = () => {
             <h1>SOCIAL</h1>
             <ul>
               <li>
-                <a href="https://www.facebook.com/share/1DFRYJekGt/"><img src={fb} alt="facebook" /></a>
+                <a href="https://www.facebook.com/share/1DFRYJekGt/" target="_blank" rel="noopener noreferrer"><img src={fb} alt="facebook" /></a>
               </li>
               <li>
-                <a href="#"><img src={ig} alt="instagram" /></a>
+                <a href="#" target="_blank"><img src={ig} alt="instagram" /></a>
               </li>
               <li>
-                <a href="https://www.tiktok.com/@sici.univalle.la"><img src={tt} alt="tiktok" /></a>
+                <a href="https://www.tiktok.com/@sici.univalle.la" target="_blank"><img src={tt} alt="tiktok" /></a>
               </li>
             </ul>
           </div>
