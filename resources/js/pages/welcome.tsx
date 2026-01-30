@@ -326,7 +326,7 @@ export default function Welcome({
                                 </span>
                             </div>
 
-                            <h1 className="font-display text-5xl leading-[0.85] font-black tracking-tighter uppercase italic md:text-8xl">
+                            <h1 className="font-display text-5xl leading-[0.85] font-black tracking-wide uppercase italic md:text-8xl">
                                 ACERCA DE <br /> NOSOTROS
                             </h1>
 
